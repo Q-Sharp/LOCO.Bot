@@ -1,0 +1,52 @@
+name: compile
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: install dotnet core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.100
+
+    - name: install dependencies
+      run: dotnet restore
+
+    - name: build
+      run: dotnet build --configuration Release
+
+    - name: test
+      run: dotnet test --no-restore --verbosity normal
+
+    - name: publish
+      run: dotnet publish './LOCO.Bot/LOCO.Bot.csproj' -c Release -r linux-x64 --no-self-contained /p:PublishReadyToRun=false
+
+    - name: App Settings Variable Substitution
+      uses: microsoft/variable-substitution@v1
+      with:
+        files: './LOCO.Bot/bin/Release/net6.0/linux-x64/publish/appsettings.json'
+      env:
+        DetailedErrors: false
+        Discord.DevToken: ${{ secrets.DISCORD_DEV_TOKEN }}
+        Discord.Token: ${{ secrets.DISCORD_TOKEN }}
+
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@v2.1.5
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
+          ARGS: "-rltgoDzvO --delete-excluded --filter 'protect *.log'"
+          SOURCE: './LOCO.Bot/bin/Release/net6.0/linux-x64/publish/'
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+          TARGET: ${{ secrets.REMOTE_TARGET }}

@@ -1,0 +1,17 @@
+{
+  "profiles": {
+    "LOCO.Bot.Production": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "LOCO_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": "true"
+    },
+    "LOCO.Bot.Development": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "LOCO_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
