@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.WebSocket;
 
-namespace LOCO.Bot.Shared.Services.Interfaces;
+namespace LOCO.Bot.Shared.Services;
 
 public interface ICommandHandler
 {

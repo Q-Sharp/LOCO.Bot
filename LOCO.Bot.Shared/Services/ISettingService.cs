@@ -1,10 +1,9 @@
 ﻿using LOCO.Bot.Shared.Entities;
 
-namespace LOCO.Bot.Shared.Services.Interfaces;
+namespace LOCO.Bot.Shared.Services;
 
 public interface ISettingService
 {
-    Setting Settings { get; }
-
+    Task<Setting> GetSettings(ulong guildId);
     Task SaveChangesAsync();
 }

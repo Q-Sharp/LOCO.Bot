@@ -5,14 +5,15 @@ using Discord.WebSocket;
 using LOCO.Bot.Data;
 using LOCO.Bot.Discord.Helpers;
 using LOCO.Bot.Shared.Modules;
-using LOCO.Bot.Shared.Services.Interfaces;
+using LOCO.Bot.Shared.Services;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using System.Diagnostics;
 
-namespace LOCO.Bot.Discord.Services.CommandHandler;
+namespace LOCO.Bot.Discord.Services;
 
 public partial class CommandHandler : ICommandHandler
 {
@@ -21,7 +22,6 @@ public partial class CommandHandler : ICommandHandler
     private readonly IServiceProvider _services;
     private readonly ILogger<CommandHandler> _logger;
     private readonly IConfiguration _config;
-    private readonly Context _ctx;
 
     public CommandHandler(IServiceProvider services, CommandService commands,
         DiscordSocketClient client, ILogger<CommandHandler> logger, IConfiguration config, Context ctx)
@@ -31,7 +31,6 @@ public partial class CommandHandler : ICommandHandler
         _logger = logger;
         _config = config;
         _services = services;
-        _ctx = ctx;
     }
 
     public async Task InitializeAsync()
@@ -42,15 +41,9 @@ public partial class CommandHandler : ICommandHandler
         _commands.Log += LogAsync;
 
         _client.MessageReceived += Client_HandleCommandAsync;
-        _client.ReactionAdded += Client_ReactionAdded; ;
         _client.Ready += Client_Ready;
         _client.Log += LogAsync;
         _client.Disconnected += Client_Disconnected;
-    }
-
-    private Task Client_ReactionAdded(Cacheable<IUserMessage, ulong> arg1, Cacheable<IMessageChannel, ulong> arg2, SocketReaction arg3)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task LogAsync(LogMessage logMessage)
@@ -58,7 +51,7 @@ public partial class CommandHandler : ICommandHandler
         if (logMessage.Exception is CommandException cmdException)
         {
             await cmdException.Context.Channel.SendMessageAsync("Something went catastrophically wrong!");
-            _logger.LogError("{cmdException.Context.User} failed to execute '{cmdException.Command.Name}' in {cmdException.Context.Channel}.",
+            _logger.LogError("{User} failed to execute '{Name}' in {Channel}.",
                 cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel);
         }
     }
@@ -68,7 +61,17 @@ public partial class CommandHandler : ICommandHandler
         _logger.Log(LogLevel.Information, "Bot is connected!");
 
         // set status
-        await _client.SetGameAsync($"LOCO Bot since 2022");
+        await _client.SetGameAsync(_config["Discord:Activity"]);
+
+        // handle restart information
+        var adminService = _services.GetService<IAdminService>();
+        var r = await adminService.ConsumeRestart();
+        if (r is not null)
+        {
+            var dest = _client.GetGuild(r.Guild).GetTextChannel(r.Channel);
+            await dest.SendMessageAsync("Bot service has been restarted!");
+        }
+
         _logger.LogInformation("Bot is online!");
     }
 
@@ -92,19 +95,18 @@ public partial class CommandHandler : ICommandHandler
 
     public async Task Client_Disconnected(Exception arg)
     {
-        _logger.LogError(arg.Message, arg);
+        _logger.LogError("{Message}", arg.Message);
 
         await Task.Run(() =>
         {
-            var mmBot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName);
-            Process.Start(mmBot);
+            var locoBot = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, AppDomain.CurrentDomain.FriendlyName);
+            Process.Start(locoBot);
             Environment.Exit(0);
         });
     }
 
     public async Task CommandExecutedAsync(Optional<CommandInfo> command, ICommandContext context, IResult result)
     {
-        // error happened
         if (!command.IsSpecified)
         {
             await context.Channel.SendMessageAsync($"I don't know this command: {context.Message}");
@@ -127,7 +129,7 @@ public partial class CommandHandler : ICommandHandler
             var moduleName = command.Value.Module.Name;
             var commandName = command.Value.Name;
 
-            _logger.LogError("{member} tried to use {commandName} (module: {moduleName}) this resulted in a {runTimeResult.Error}",
+            _logger.LogError("{member} tried to use {commandName} (module: {moduleName}) this resulted in a {Error}",
                 member, commandName, moduleName, runTimeResult.Error);
         }
     }

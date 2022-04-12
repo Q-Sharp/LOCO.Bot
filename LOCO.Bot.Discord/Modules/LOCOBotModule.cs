@@ -1,13 +1,12 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using LOCO.Bot.Data;
 using LOCO.Bot.Shared.Modules;
-using LOCO.Bot.Shared.Services.Interfaces;
+using LOCO.Bot.Shared.Services;
 
 namespace LOCO.Bot.Discord.Modules;
 
-public abstract class LOCOBotModule : ModuleBase
+public abstract class LOCOBotModule : ModuleBase<SocketCommandContext>
 {
     protected readonly IContext _ctx;
     protected readonly ICommandHandler _commandHandler;

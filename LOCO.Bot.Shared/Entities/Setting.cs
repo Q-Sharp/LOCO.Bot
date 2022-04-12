@@ -7,6 +7,7 @@ public class Setting : IHaveId
     public virtual ulong GuessChannelId { get; set; }
     public virtual ulong GuessMemberRoleId { get; set; }
     public virtual bool GuessingsPossible { get; set; }
+    public virtual ulong GuildId { get; set; }
 
     public void Update(object guess)
     {
@@ -15,6 +16,7 @@ public class Setting : IHaveId
             GuessChannelId = setting.GuessChannelId;
             GuessMemberRoleId = setting.GuessMemberRoleId;
             GuessingsPossible = setting.GuessingsPossible;
+            GuildId = setting.GuildId;
         }
     }
 }

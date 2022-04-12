@@ -2,11 +2,11 @@
 using Discord.Commands;
 
 using LOCO.Bot.Data;
-using LOCO.Bot.Shared.Services.Interfaces;
+using LOCO.Bot.Shared.Services;
 
 using Microsoft.Extensions.Configuration;
 
-namespace LOCO.Bot.Discord.Modules.Help;
+namespace LOCO.Bot.Discord.Modules;
 
 [Name("Help")]
 public class HelpModule : LOCOBotModule
@@ -16,7 +16,7 @@ public class HelpModule : LOCOBotModule
 
     public HelpModule(CommandService service, Context ctx, ISettingService settingService, ICommandHandler commandHandler, IConfiguration configuration)
         : base(ctx, settingService, commandHandler)
-{
+    {
         _service = service;
         _configuration = configuration;
     }

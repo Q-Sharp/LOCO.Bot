@@ -1,5 +1,5 @@
 ﻿using LOCO.Bot.Shared.Entities;
-using LOCO.Bot.Shared.Services.Interfaces;
+using LOCO.Bot.Shared.Services;
 
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +23,7 @@ public class Context : DbContext, IContext
 
     public DbSet<MemberGuess> MemberGuess { get; set; }
     public DbSet<Setting> Setting { get; set; }
+    public DbSet<Restart> Restart { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +40,5 @@ public class Context : DbContext, IContext
 
         ChangeTracker.DetectChanges();
     }
-
     public async Task SaveChangesAsync() => await base.SaveChangesAsync();
 }

@@ -1,11 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
 
-namespace LOCO.Bot.Shared.Modules.Interfaces;
+namespace LOCO.Bot.Shared.Modules;
 
 public interface IMemberGuessModule
 {
-    Task<RuntimeResult> End([Remainder] string endResult);
+    Task<RuntimeResult> Publish([Remainder] string endResult);
     Task<RuntimeResult> Guess([Remainder] string guess);
     Task<RuntimeResult> SetChannel(IChannel guessChannel);
     Task<RuntimeResult> SetRole(IRole guessRole);

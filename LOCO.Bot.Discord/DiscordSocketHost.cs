@@ -3,9 +3,8 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using LOCO.Bot.Data;
-using LOCO.Bot.Discord.Services.CommandHandler;
-using LOCO.Bot.Discord.Services.Settings;
-using LOCO.Bot.Shared.Services.Interfaces;
+using LOCO.Bot.Discord.Services;
+using LOCO.Bot.Shared.Services;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +20,8 @@ public static class DiscordSocketHost
     public static IHostBuilder CreateDiscordSocketHost(string[] args) =>
        Host.CreateDefaultBuilder(args)
            .UseSystemd()
+           .ConfigureHostOptions(options => options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore)
+           .ConfigureAppConfiguration(appConfig => appConfig.AddUserSecrets(typeof(DiscordSocketHost).Assembly))
            .ConfigureHostConfiguration(hostConfig =>
            {
                hostConfig.AddEnvironmentVariables(prefix: "LOCO_");
@@ -33,7 +34,6 @@ public static class DiscordSocketHost
                var config = h.Configuration;
                var discordConfig = config.GetSection("Discord:Settings");
 
-               var sp =
                s.AddDbContext<IContext, Context>(o => o.UseNpgsql(config.GetConnectionString("Context")))
                 .AddHostedService<DiscordWorker>()
                 .AddSingleton(o => new DiscordSocketClient(new DiscordSocketConfig
@@ -43,13 +43,14 @@ public static class DiscordSocketHost
                 }))
                 .AddSingleton(s => new CommandService(new CommandServiceConfig
                 {
-                    LogLevel = Enum.Parse<LogSeverity>(discordConfig["LogLevel"], true),
+                    LogLevel = discordConfig.GetValue<LogSeverity>("LogLevel"),
                     CaseSensitiveCommands = discordConfig.GetValue<bool>("CaseSensitiveCommands"),
                     DefaultRunMode = discordConfig.GetValue<RunMode>("DefaultRunMode"),
                     SeparatorChar = discordConfig.GetValue<string>("SeparatorChar").FirstOrDefault(),
                 }))
                 .AddSingleton<ICommandHandler, CommandHandler>()
                 .AddSingleton<ISettingService, SettingService>()
+                .AddSingleton<IAdminService, AdminService>()
                 .BuildServiceProvider();
            });
 }
