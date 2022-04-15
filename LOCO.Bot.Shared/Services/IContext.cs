@@ -6,7 +6,7 @@ namespace LOCO.Bot.Shared.Services;
 
 public interface IContext
 {
-    DbSet<MemberGuess> MemberGuess { get; set; }
+    DbSet<Guess> Guess { get; set; }
     DbSet<Setting> Setting { get; set; }
     DbSet<Restart> Restart { get; set; }
 

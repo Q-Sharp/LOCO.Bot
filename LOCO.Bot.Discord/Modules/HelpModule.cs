@@ -2,20 +2,22 @@
 using Discord.Commands;
 
 using LOCO.Bot.Data;
+using LOCO.Bot.Discord.Attributes;
 using LOCO.Bot.Shared.Services;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace LOCO.Bot.Discord.Modules;
 
 [Name("Help")]
-public class HelpModule : LOCOBotModule
+public class HelpModule : LOCOBotModule<HelpModule>
 {
     private readonly CommandService _service;
     private readonly IConfiguration _configuration;
 
-    public HelpModule(CommandService service, Context ctx, ISettingService settingService, ICommandHandler commandHandler, IConfiguration configuration)
-        : base(ctx, settingService, commandHandler)
+    public HelpModule(CommandService service, Context ctx, ISettingService settingService, ICommandHandler commandHandler, IConfiguration configuration, ILogger<HelpModule> logger)
+        : base(ctx, settingService, commandHandler, logger)
     {
         _service = service;
         _configuration = configuration;
@@ -39,7 +41,8 @@ public class HelpModule : LOCOBotModule
         foreach (var module in _service.Modules)
         {
             string description = null;
-            foreach (var cmd in module.Commands.Where(x => x.Preconditions.All(attribute => attribute.GetType() != typeof(RequireOwnerAttribute))).Distinct().ToArray())
+            foreach (var cmd in module.Commands.Where(x => x.Preconditions.All(attribute => attribute.GetType() != typeof(RequireOwnerAttribute) 
+                && attribute.GetType() != typeof(RequireBotOwnerAttribute))).Distinct().ToArray())
             {
                 var result = await cmd.CheckPreconditionsAsync(Context);
                 if (!result.IsSuccess)

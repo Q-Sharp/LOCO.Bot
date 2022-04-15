@@ -4,19 +4,23 @@ using Discord.Commands;
 using LOCO.Bot.Shared.Modules;
 using LOCO.Bot.Shared.Services;
 
+using Microsoft.Extensions.Logging;
+
 namespace LOCO.Bot.Discord.Modules;
 
-public abstract class LOCOBotModule : ModuleBase<SocketCommandContext>
+public abstract class LOCOBotModule<T> : ModuleBase<SocketCommandContext>
 {
     protected readonly IContext _ctx;
     protected readonly ICommandHandler _commandHandler;
     protected readonly ISettingService _settingService;
+    protected readonly ILogger<T> _logger;
 
-    public LOCOBotModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler)
+    public LOCOBotModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, ILogger<T> logger)
     {
         _ctx = ctx;
         _commandHandler = commandHandler;
         _settingService = settingService;
+        _logger = logger;
     }
 
     public static LOCOBotResult FromSuccess(string successMessage = null, IMessage answer = null)

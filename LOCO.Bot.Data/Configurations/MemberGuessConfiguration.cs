@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LOCO.Bot.Data.Configurations;
 
-public class MemberGuessConfiguration : IEntityTypeConfiguration<MemberGuess>
+public class MemberGuessConfiguration : IEntityTypeConfiguration<Guess>
 {
-    public void Configure(EntityTypeBuilder<MemberGuess> builder)
+    public void Configure(EntityTypeBuilder<Guess> builder)
     {
         builder.UseXminAsConcurrencyToken()
                .HasKey(c => c.Id);

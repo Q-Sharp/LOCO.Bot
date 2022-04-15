@@ -3,15 +3,17 @@
 using LOCO.Bot.Discord.Attributes;
 using LOCO.Bot.Shared.Services;
 
+using Microsoft.Extensions.Logging;
+
 namespace LOCO.Bot.Discord.Modules;
 
 [Name("Admin")]
-public class AdminModule : LOCOBotModule
+public class AdminModule : LOCOBotModule<AdminModule>
 {
     private readonly IAdminService _adminService;
 
-    public AdminModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, IAdminService adminService) 
-        : base(ctx, settingService, commandHandler)
+    public AdminModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, IAdminService adminService, ILogger<AdminModule> logger) 
+        : base(ctx, settingService, commandHandler, logger)
     {
         _adminService = adminService;
     }

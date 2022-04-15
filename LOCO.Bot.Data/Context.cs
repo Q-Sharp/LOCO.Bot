@@ -21,7 +21,7 @@ public class Context : DbContext, IContext
     {
     }
 
-    public DbSet<MemberGuess> MemberGuess { get; set; }
+    public DbSet<Guess> Guess { get; set; }
     public DbSet<Setting> Setting { get; set; }
     public DbSet<Restart> Restart { get; set; }
 

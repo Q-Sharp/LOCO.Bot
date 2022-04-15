@@ -9,6 +9,7 @@ using LOCO.Bot.Shared.Entities;
 using LOCO.Bot.Shared.Services;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 using Xunit;
 
@@ -31,10 +32,10 @@ public class MemberGuessModuleTest
          .Returns(Task.FromResult(new Setting { Id = 1, GuessChannelId = 1, GuessMemberRoleId = 1, GuessingsPossible = true }));
 
         var ch = A.Fake<ICommandHandler>();
-
+        var l = A.Fake<ILogger<GuessModule>>();
         _cctx = A.Fake<ICommandContext>();
 
-        var m = new GuessModule(_ctx, ss, ch);
+        var m = new GuessModule(_ctx, ss, ch, l);
 
         //(m as IModuleBase).SetContext(_cctx);
 
