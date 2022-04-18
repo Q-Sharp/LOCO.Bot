@@ -6,15 +6,12 @@ using LOCO.Bot.Shared.Blazor.Defaults;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-
-using MudBlazor.Services;
 
 using Serilog;
 
@@ -58,7 +55,6 @@ services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.Au
         {
             options.SessionStore = store;
             options.ExpireTimeSpan = TimeSpan.FromDays(30);
-            options.SlidingExpiration = true;
         });
 
 services.AddAntiforgery(options =>
@@ -66,7 +62,6 @@ services.AddAntiforgery(options =>
     options.HeaderName = AntiforgeryDefaults.Headername;
     options.Cookie.Name = AntiforgeryDefaults.Cookiename;
     options.Cookie.SameSite = SameSiteMode.Strict;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 services.AddHttpClient();
@@ -80,9 +75,7 @@ services.AddAuthentication(opt =>
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
-    options.SlidingExpiration = true;
 })
 .AddDiscord(DiscordAuthenticationDefaults.AuthenticationScheme, c =>
 {
