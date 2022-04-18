@@ -1,4 +1,4 @@
-﻿namespace LOCO.Bot.Shared;
+﻿namespace LOCO.Bot.Shared.Data;
 
 public interface IHaveId
 {

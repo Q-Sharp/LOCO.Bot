@@ -1,8 +1,8 @@
 ﻿using AspNet.Security.OAuth.Discord;
 
-using LOCO.Bot.Blazor.Shared.Auth;
-using LOCO.Bot.Blazor.Shared.Defaults;
 using LOCO.Bot.Data;
+using LOCO.Bot.Shared.Blazor.Auth;
+using LOCO.Bot.Shared.Blazor.Defaults;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -28,13 +28,14 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult GetCurrentUser()
-        => Ok(User.Identity.IsAuthenticated ? CreateUserInfo(User) : DCUser.Anonymous);
+    public IActionResult GetCurrentUser() => Ok(User.Identity.IsAuthenticated ? CreateUserInfo(User) : DCUser.Anonymous);
 
     private IDCUser CreateUserInfo(ClaimsPrincipal claimsPrincipal)
     {
         if (!claimsPrincipal.Identity.IsAuthenticated)
+        {
             return DCUser.Anonymous;
+        }
 
         var dcUser = new DCUser
         {
@@ -62,8 +63,6 @@ public class UserController : ControllerBase
 
             dcUser.Claims = allClaims;
         }
-
-        
 
         dcUser.Name = claimsIdentity.Name;
         dcUser.Id = ulong.Parse(claimsIdentity.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value ?? "0");

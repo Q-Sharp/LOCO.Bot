@@ -28,12 +28,12 @@
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\LOCO.Bot.Data\LOCO.Bot.Data.csproj" />
     <ProjectReference Include="..\Client\LOCO.Bot.Blazor.Client.csproj" />
-    <ProjectReference Include="..\Shared\LOCO.Bot.Blazor.Shared.csproj" />
   </ItemGroup>
 
 </Project>

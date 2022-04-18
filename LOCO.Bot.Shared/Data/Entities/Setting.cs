@@ -1,4 +1,4 @@
-﻿namespace LOCO.Bot.Shared.Entities;
+﻿namespace LOCO.Bot.Shared.Data.Entities;
 
 public class Setting : IHaveId
 {

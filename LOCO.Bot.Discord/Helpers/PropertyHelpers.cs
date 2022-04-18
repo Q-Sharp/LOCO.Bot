@@ -1,4 +1,4 @@
-﻿using LOCO.Bot.Shared;
+﻿using LOCO.Bot.Shared.Data;
 
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -7,7 +7,7 @@ namespace LOCO.Bot.Discord.Helpers;
 
 public static class PropertyHelpers
 {
-    private static readonly BindingFlags _cisBF 
+    private static readonly BindingFlags _cisBF
         = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.IgnoreCase;
 
     public static void SetProperty<T>(this T m, string propertyName, string newValue)
@@ -22,10 +22,16 @@ public static class PropertyHelpers
                 object safeValue = null;
 
                 if (t is not null)
+                {
                     if (TimeSpan.TryParse(newValue.ToString(), out var tSpan))
+                    {
                         safeValue = tSpan;
+                    }
                     else
+                    {
                         safeValue = Convert.ChangeType(newValue, t);
+                    }
+                }
 
                 var val = Convert.ChangeType(safeValue, t);
                 var oldPropValue = m.GetType().GetProperty(propertyName, _cisBF)?.GetValue(m, null);
@@ -45,7 +51,9 @@ public static class PropertyHelpers
         {
             foreach (var p in m.GetType().GetProperties().Where(x => x.Name != nameof(IHaveId.Id)
                  && !x.CustomAttributes.Any(x => x.AttributeType == typeof(JsonIgnoreAttribute))))
+            {
                 m.SetProperty(p.Name, updateWith.GetProperty(p.Name) as string);
+            }
         }
         catch
         {
@@ -76,7 +84,9 @@ public static class PropertyHelpers
         try
         {
             if (src is null || propName is null)
+            {
                 return default;
+            }
 
             if (propName.Contains("."))
             {

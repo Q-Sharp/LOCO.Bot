@@ -10,8 +10,7 @@ public class LOCOTicketStore : ITicketStore
     private const string _keyPrefix = "__AUTHTICKETSTORE";
     private readonly IMemoryCache _cache;
 
-    public LOCOTicketStore(IMemoryCache cache)
-        => _cache = cache;
+    public LOCOTicketStore(IMemoryCache cache) => _cache = cache;
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
@@ -31,7 +30,9 @@ public class LOCOTicketStore : ITicketStore
         var expiresUtc = ticket.Properties.ExpiresUtc;
 
         if (expiresUtc.HasValue)
+        {
             options.SetAbsoluteExpiration(expiresUtc.Value);
+        }
 
         options.SetSlidingExpiration(TimeSpan.FromMinutes(60));
 

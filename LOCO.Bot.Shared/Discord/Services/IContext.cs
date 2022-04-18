@@ -1,8 +1,8 @@
-﻿using LOCO.Bot.Shared.Entities;
+﻿using LOCO.Bot.Shared.Data.Entities;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace LOCO.Bot.Shared.Services;
+namespace LOCO.Bot.Shared.Discord.Services;
 
 public interface IContext
 {

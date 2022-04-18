@@ -1,6 +1,7 @@
 ﻿@page "/"
+@using LOCO.Bot.Shared.Blazor.Defaults;
+    
 @namespace MMBot.Blazor.Server.Pages
-@using LOCO.Bot.Blazor.Shared.Defaults
 
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
@@ -20,8 +21,6 @@
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="css/font.css" rel="stylesheet" />
-
-    <link href="manifest.json" rel="manifest" />
 </head>
 
 <body>
@@ -35,9 +34,9 @@
     <script type=text/javascript src="wheel.js"></script>
 
     <div id="app">
-            <div class="loading-container">
-                <div class="spinner" />
-            </div>
+        <div class="loading-container">
+            <div class="spinner" />
+        </div>
    </div>
 
    <div id="blazor-error-ui">

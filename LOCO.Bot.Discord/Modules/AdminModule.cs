@@ -1,7 +1,7 @@
 ﻿using Discord.Commands;
 
 using LOCO.Bot.Discord.Attributes;
-using LOCO.Bot.Shared.Services;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Logging;
 
@@ -12,11 +12,8 @@ public class AdminModule : LOCOBotModule<AdminModule>
 {
     private readonly IAdminService _adminService;
 
-    public AdminModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, IAdminService adminService, ILogger<AdminModule> logger) 
-        : base(ctx, settingService, commandHandler, logger)
-    {
-        _adminService = adminService;
-    }
+    public AdminModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, IAdminService adminService, ILogger<AdminModule> logger)
+        : base(ctx, settingService, commandHandler, logger) => _adminService = adminService;
 
     [Command("Restart")]
     [Summary("Restarts the bot")]

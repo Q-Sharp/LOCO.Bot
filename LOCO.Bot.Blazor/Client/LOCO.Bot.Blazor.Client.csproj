@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\LOCO.Bot.Blazor.Shared.csproj" />
+    <ProjectReference Include="..\..\LOCO.Bot.Shared\LOCO.Bot.Shared.csproj" />
   </ItemGroup>
 
 </Project>

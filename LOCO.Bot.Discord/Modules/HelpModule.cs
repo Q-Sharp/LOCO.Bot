@@ -3,7 +3,7 @@ using Discord.Commands;
 
 using LOCO.Bot.Data;
 using LOCO.Bot.Discord.Attributes;
-using LOCO.Bot.Shared.Services;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -41,30 +41,40 @@ public class HelpModule : LOCOBotModule<HelpModule>
         foreach (var module in _service.Modules)
         {
             string description = null;
-            foreach (var cmd in module.Commands.Where(x => x.Preconditions.All(attribute => attribute.GetType() != typeof(RequireOwnerAttribute) 
+            foreach (var cmd in module.Commands.Where(x => x.Preconditions.All(attribute => attribute.GetType() != typeof(RequireOwnerAttribute)
                 && attribute.GetType() != typeof(RequireBotOwnerAttribute))).Distinct().ToArray())
             {
                 var result = await cmd.CheckPreconditionsAsync(Context);
                 if (!result.IsSuccess)
+                {
                     continue;
+                }
 
                 var args = string.Join(" ", cmd.Parameters?.Select(x => $"[{x.Name}]").ToArray() ?? Array.Empty<string>());
 
                 if (string.Equals(cmd.Name, module.Group, StringComparison.InvariantCultureIgnoreCase))
+                {
                     description += $"{prefix}{module.Group} {args}{Environment.NewLine}";
+                }
                 else if (string.IsNullOrWhiteSpace(module.Group))
+                {
                     description += $"{prefix}{cmd.Name} {args}{Environment.NewLine}";
+                }
                 else
+                {
                     description += $"{prefix}{module.Group} {cmd.Name} {args}{Environment.NewLine}";
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(description))
+            {
                 builder.AddField(x =>
                 {
                     x.Name = module.Name;
                     x.Value = description;
                     x.IsInline = false;
                 });
+            }
         }
 
         await ReplyAsync("", false, builder.Build());
@@ -77,7 +87,9 @@ public class HelpModule : LOCOBotModule<HelpModule>
         var result = _service.Search(Context, command);
 
         if (!result.IsSuccess)
+        {
             return FromErrorObjectNotFound("command", command);
+        }
 
         var builder = new EmbedBuilder()
         {

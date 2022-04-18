@@ -1,8 +1,7 @@
-﻿using Discord.Commands;
-
+﻿
 using LOCO.Bot.Data;
-using LOCO.Bot.Shared.Entities;
-using LOCO.Bot.Shared.Services;
+using LOCO.Bot.Shared.Data.Entities;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Logging;
 

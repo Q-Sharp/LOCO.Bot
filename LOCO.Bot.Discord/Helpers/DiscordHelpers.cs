@@ -1,7 +1,7 @@
-﻿using System.Text.RegularExpressions;
-
-using Discord;
+﻿using Discord;
 using Discord.Commands;
+
+using System.Text.RegularExpressions;
 
 namespace LOCO.Bot.Discord.Helpers;
 

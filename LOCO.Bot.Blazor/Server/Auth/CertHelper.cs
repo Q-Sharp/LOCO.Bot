@@ -1,6 +1,6 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿using Microsoft.IdentityModel.Tokens;
 
-using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography.X509Certificates;
 
 namespace LOCO.Bot.Blazor.Server.Auth;
 
@@ -25,6 +25,5 @@ public static class CertHelpers
         }
     }
 
-    public static X509SecurityKey GetSecKeyFromCertStore(string certName)
-        => new(GetCertificateFromStore(certName));
+    public static X509SecurityKey GetSecKeyFromCertStore(string certName) => new(GetCertificateFromStore(certName));
 }

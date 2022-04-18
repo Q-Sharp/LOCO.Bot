@@ -1,13 +1,12 @@
-using System.Net.Http.Headers;
-using System.Security.Claims;
-
 using Blazored.SessionStorage;
 
 using LOCO.Bot.Blazor.Client;
 using LOCO.Bot.Blazor.Client.Auth;
-using LOCO.Bot.Blazor.Shared.Defaults;
+using LOCO.Bot.Blazor.Client.Services;
+using LOCO.Bot.Shared.Blazor.Auth;
+using LOCO.Bot.Shared.Blazor.Defaults;
+using LOCO.Bot.Shared.Blazor.Services;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -16,6 +15,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using MudBlazor.Services;
 
 using Serilog;
+
+using System.Net.Http.Headers;
+using System.Security.Claims;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
@@ -32,7 +34,7 @@ builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore(options =>
 {
     options.AddPolicy(ApiAuthDefaults.PolicyName, policy =>
-    {                                                          
+    {
         policy.RequireClaim(ClaimTypes.NameIdentifier, "190373435744976896",  // Vielz#9177
                                                        "301764235887902727",  // QoO#1337
                                                        "167671193174802432"); // Shredalexander#7831
@@ -64,6 +66,6 @@ builder.Services.AddTransient<IAuthorizedAntiForgeryClientFactory, AuthorizedAnt
 
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddMudServices();
-
+builder.Services.AddTransient<IWheelService, WheelService>();
 
 await builder.Build().RunAsync();

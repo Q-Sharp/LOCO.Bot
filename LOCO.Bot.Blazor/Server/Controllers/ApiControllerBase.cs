@@ -8,12 +8,9 @@ namespace LOCO.Bot.Blazor.Server.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [ValidateAntiForgeryToken]
-[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
+[Authorize]
 public class ApiControllerBase<TController> : ControllerBase
 {
-    protected ILogger<TController> Logger { get; }
-    public ApiControllerBase(ILogger<TController> logger)
-    {
-        Logger = logger;
-    }
+    protected ILogger<TController> _logger { get; }
+    public ApiControllerBase(ILogger<TController> logger) => _logger = logger;
 }

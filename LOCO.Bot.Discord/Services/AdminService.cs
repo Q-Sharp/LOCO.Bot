@@ -1,5 +1,5 @@
-﻿using LOCO.Bot.Shared.Entities;
-using LOCO.Bot.Shared.Services;
+﻿using LOCO.Bot.Shared.Data.Entities;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,7 +21,7 @@ public class AdminService : LOCOBotService<AdminService>, IAdminService
     {
         try
         {
-            var r = _ctx.Restart.AsEnumerable().OrderBy(r => r.Id).FirstOrDefault();
+            Restart r = _ctx.Restart.AsEnumerable().OrderBy(r => r.Id).FirstOrDefault();
 
             if (r != null)
             {
@@ -30,7 +30,9 @@ public class AdminService : LOCOBotService<AdminService>, IAdminService
                 return r;
             }
             else
+            {
                 return default;
+            }
         }
         catch
         {

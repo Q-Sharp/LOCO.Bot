@@ -1,12 +1,11 @@
-﻿using System.Net.Http.Json;
-using System.Security.Claims;
-
-using LOCO.Bot.Blazor.Shared.Defaults;
+﻿using LOCO.Bot.Shared.Blazor.Auth;
+using LOCO.Bot.Shared.Blazor.Defaults;
 
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 
-using LOCO.Bot.Blazor.Shared.Auth;
+using System.Net.Http.Json;
+using System.Security.Claims;
 
 namespace LOCO.Bot.Blazor.Client.Auth;
 
@@ -28,8 +27,7 @@ public class LOCOBotAuthenticationStateProvider : AuthenticationStateProvider
         _logger = logger;
     }
 
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
-        => new AuthenticationState(await GetUser(true));
+    public override async Task<AuthenticationState> GetAuthenticationStateAsync() => new AuthenticationState(await GetUser(true));
 
     public async Task<IDCUser> GetCurrentUser()
     {
@@ -85,7 +83,9 @@ public class LOCOBotAuthenticationStateProvider : AuthenticationStateProvider
         }
 
         if (user == null || !user.IsAuthenticated)
+        {
             return new ClaimsPrincipal(new ClaimsIdentity());
+        }
 
         var identity = new ClaimsIdentity(
                 nameof(LOCOBotAuthenticationStateProvider),
@@ -93,7 +93,9 @@ public class LOCOBotAuthenticationStateProvider : AuthenticationStateProvider
                 user.RoleClaimType);
 
         if (user.Claims != null)
+        {
             identity.AddClaims(user.Claims.Select(x => new Claim(x.Type, x.Value)));
+        }
 
         return new ClaimsPrincipal(identity);
     }

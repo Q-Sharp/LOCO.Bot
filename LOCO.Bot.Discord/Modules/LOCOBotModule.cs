@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.Commands;
 
-using LOCO.Bot.Shared.Modules;
-using LOCO.Bot.Shared.Services;
+using LOCO.Bot.Shared.Discord.Modules;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Logging;
 
@@ -23,14 +23,13 @@ public abstract class LOCOBotModule<T> : ModuleBase<SocketCommandContext>
         _logger = logger;
     }
 
-    public static LOCOBotResult FromSuccess(string successMessage = null, IMessage answer = null)
-        => LOCOBotResult.Create(null, successMessage, answer);
-    public static LOCOBotResult FromError(CommandError error, string reason, IMessage answer = null)
-        => LOCOBotResult.Create(error, reason, answer);
-    public static LOCOBotResult FromErrorObjectNotFound(string objectname, string searchstring, IMessage answer = null)
-        => LOCOBotResult.Create(CommandError.ObjectNotFound, $"{objectname}: {searchstring}", answer);
-    public static LOCOBotResult FromErrorUnsuccessful(string error, IMessage answer = null)
-        => LOCOBotResult.Create(CommandError.Unsuccessful, error, answer);
-    public static LOCOBotResult FromIgnore()
-        => LOCOBotResult.Create(null, null, null);
+    public static LOCOBotResult FromSuccess(string successMessage = null, IMessage answer = null) => LOCOBotResult.Create(null, successMessage, answer);
+
+    public static LOCOBotResult FromError(CommandError error, string reason, IMessage answer = null) => LOCOBotResult.Create(error, reason, answer);
+
+    public static LOCOBotResult FromErrorObjectNotFound(string objectname, string searchstring, IMessage answer = null) => LOCOBotResult.Create(CommandError.ObjectNotFound, $"{objectname}: {searchstring}", answer);
+
+    public static LOCOBotResult FromErrorUnsuccessful(string error, IMessage answer = null) => LOCOBotResult.Create(CommandError.Unsuccessful, error, answer);
+
+    public static LOCOBotResult FromIgnore() => LOCOBotResult.Create(null, null, null);
 }

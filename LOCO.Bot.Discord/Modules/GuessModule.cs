@@ -2,9 +2,9 @@
 using Discord.Commands;
 
 using LOCO.Bot.Discord.Helpers;
-using LOCO.Bot.Shared.Entities;
-using LOCO.Bot.Shared.Modules;
-using LOCO.Bot.Shared.Services;
+using LOCO.Bot.Shared.Data.Entities;
+using LOCO.Bot.Shared.Discord.Modules;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Logging;
 
@@ -77,7 +77,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync(true, false);
         if (result.Error != null)
+        {
             return result;
+        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
@@ -109,7 +111,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync();
         if (result.Error != null)
+        {
             return result;
+        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
@@ -132,7 +136,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync();
         if (result.Error != null)
+        {
             return result;
+        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
@@ -140,7 +146,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         var role = GetRole(settings.GuessMemberRoleId);
 
         if (Context.Channel.Id != settings.GuessChannelId)
+        {
             return FromErrorUnsuccessful("This is the wrong channel for guessings!");
+        }
 
         if (double.TryParse(guess.PrepareForGuessing(), NumberStyles.Currency, new CultureInfo("en-US"), out var dGuess))
         {
@@ -170,14 +178,18 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync(true, false);
         if (result.Error != null)
+        {
             return result;
+        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
-        if(settings.GuessingsPossible)
+        if (settings.GuessingsPossible)
         {
             var stopResult = await Stop();
             if (!stopResult.IsSuccess)
+            {
                 return FromError(CommandError.Unsuccessful, "Couldn't stop guessing!");
+            }
         }
 
         if (double.TryParse(endResult.PrepareForGuessing(), NumberStyles.Currency, new CultureInfo("en-US"), out var finalResult))
@@ -222,7 +234,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     private static Embed GetRanking(IEnumerable<Guess> guesses, string result)
     {
         if (guesses is null || guesses.Count() <= 0)
+        {
             return default;
+        }
 
         var builder = new EmbedBuilder()
         {
@@ -266,15 +280,18 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
         if (checkSettings && settings.GuessChannelId == 0)
+        {
             return FromError(CommandError.Unsuccessful, "No guessing channel configured!");
+        }
 
         if (checkIfGuessesAccepted && !settings.GuessingsPossible)
+        {
             return FromError(CommandError.Unsuccessful, "No guessing round active atm!");
+        }
 
         return FromSuccess();
     }
 
-    private IRole GetRole(ulong roleid)
-        => roleid == 0 ? Context.Guild.EveryoneRole
-            : Context.Guild.Roles.FirstOrDefault(x => x.Id == roleid);
+    private IRole GetRole(ulong roleid) => roleid == 0 ? Context.Guild.EveryoneRole
+                   : Context.Guild.Roles.FirstOrDefault(x => x.Id == roleid);
 }

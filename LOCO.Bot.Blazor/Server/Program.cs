@@ -1,22 +1,21 @@
-using System.Net;
-
 using AspNet.Security.OAuth.Discord;
 
-using LOCO.Bot.Blazor.Shared.Defaults;
+using LOCO.Bot.Blazor.Server.Auth;
+using LOCO.Bot.Data;
+using LOCO.Bot.Shared.Blazor.Defaults;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Net.Http.Headers;
-
-using LOCO.Bot.Blazor.Server.Auth;
-using LOCO.Bot.Data;
+using Microsoft.Extensions.Options;
 
 using MudBlazor.Services;
 
 using Serilog;
+
+using System.Net;
 using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,8 +33,7 @@ Log.Logger = new LoggerConfiguration()
                 .CreateLogger();
 
 services.AddLogging(l => l.ClearProviders()
-                          .AddSerilog(Log.Logger)
-                          .AddSystemdConsole());
+                          .AddSerilog(Log.Logger));
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
@@ -45,30 +43,35 @@ services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
 
 services.AddSingleton<ITicketStore, LOCOTicketStore>();
 services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
-        .Configure<ITicketStore>((options, store) => options.SessionStore = store);
+        .Configure<ITicketStore>((options, store) =>
+        {
+            options.SessionStore = store;
+            options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            options.SlidingExpiration = true;
+        });
 
 services.AddAntiforgery(options =>
 {
     options.HeaderName = AntiforgeryDefaults.Headername;
     options.Cookie.Name = AntiforgeryDefaults.Cookiename;
-    options.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
+    options.Cookie.SameSite = SameSiteMode.Strict;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 services.AddHttpClient();
 services.AddOptions();
 
-services.AddResponseCaching();
-
 services.AddAuthentication(opt =>
 {
     opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = DiscordAuthenticationDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, c =>
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
-    c.Cookie.SameSite = Microsoft.AspNetCore.Http.SameSiteMode.Strict;
-    c.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.SlidingExpiration = true;
 })
 .AddDiscord(DiscordAuthenticationDefaults.AuthenticationScheme, c =>
 {
@@ -107,8 +110,6 @@ services.AddAuthorization(options =>
 
 services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 services.AddRazorPages();
-
-services.AddMudServices();
 
 services.AddSession()
         .AddHttpContextAccessor();
@@ -150,5 +151,9 @@ app.UseAuthorization();
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToPage("/_Host");
+
+using var scope = app.Services.CreateScope();
+var ctx = scope.ServiceProvider.GetRequiredService<Context>();
+await ctx.MigrateAsync();
 
 app.Run();

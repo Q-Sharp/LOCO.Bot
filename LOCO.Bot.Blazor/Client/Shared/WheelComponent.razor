@@ -1,48 +1,43 @@
 ﻿@inject IJSRuntime _jSRuntime
+@inject IWheelService _wheelService
 
-<div id="venues" style="float:left; visibility:collapse">
-    <ul>
-        @foreach(var we in Wheel.WheelEntries)
-        {         
-            <li>
-                <input id=@($"venue-{we.Id}") name=@(we.Text) value=@(we.Text) type="checkbox" checked="checked" style=@($"background-color:{we.Color}")>
-                <label for=@($"venue-{we.Id}")>@(we.Text)</label>
-            </li>
-        }
-    </ul>
-</div>
-
-<div id="wheel">
-    <canvas height="600" id="canvas" width="1000"></canvas>
-</div>
-
-<div id="stats">
-    <div id="counter">
-
+@if (WheelEntries != null)
+{
+    <div id="venues" style="float:left; visibility:collapse">
+        <ul>
+            @foreach (var we in WheelEntries)
+            {
+                <li>
+                    <input id=@($"venue-{we.Guid}") name=@(we.Text) value=@(we.Text) type="checkbox" checked="checked" style=@($"background-color:{we.Color}")>
+                    <label for=@($"venue-{we.Guid}")>@(we.Text)</label>
+                </li>
+            }
+        </ul>
     </div>
-</div>
+
+    <div id="wheel">
+        <canvas height="600" id="canvas" width="1000"></canvas>
+    </div>
+
+    <div id="stats">
+        <div id="counter">
+        </div>
+    </div>
+}
 
 @code {
-    public Wheel Wheel { get; set; }
+    public WheelEntry[] WheelEntries { get; set; }
 
     protected async override Task OnInitializedAsync()
     {
-        Wheel = new();
-
-        Wheel.AddEntries("1k RLB", System.Drawing.Color.DarkRed, 5);
-        Wheel.AddEntries("5K RLB", System.Drawing.Color.OrangeRed, 3);
-        Wheel.AddEntries("20$ bonus buy", System.Drawing.Color.Green, 2);
-        Wheel.AddEntries("40$ bonus buy", System.Drawing.Color.LightGreen, 1);
-        Wheel.AddEntries("100$ bonus buy", System.Drawing.Color.Gold, 1);
-
-        Wheel.Shuffle();
-
+        WheelEntries = (await _wheelService.GetWheelEntriesShuffledAsync()).ToArray();
         await base.OnInitializedAsync();
     }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
     {
-        await _jSRuntime.InvokeVoidAsync("initWheel");
+        if(WheelEntries != null && WheelEntries.Length > 0)
+            await _jSRuntime.InvokeVoidAsync("initWheel");
         await base.OnAfterRenderAsync(firstRender);
     }
 }

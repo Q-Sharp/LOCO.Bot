@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+
+using System.Diagnostics;
 
 namespace LOCO.Bot.Blazor.Server.Pages;
 
@@ -13,8 +13,5 @@ public class ErrorModel : PageModel
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
-    public void OnGet()
-    {
-        RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
-    }
+    public void OnGet() => RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
 }

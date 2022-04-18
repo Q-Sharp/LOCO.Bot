@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LOCO.Bot.Blazor\Server\LOCO.Bot.Blazor.Server.csproj" />
     <ProjectReference Include="..\LOCO.Bot.Discord\LOCO.Bot.Discord.csproj" />
     <ProjectReference Include="..\LOCO.Bot.Twitch\LOCO.Bot.Twitch.csproj" />
   </ItemGroup>

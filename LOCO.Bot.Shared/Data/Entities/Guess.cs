@@ -1,4 +1,4 @@
-﻿namespace LOCO.Bot.Shared.Entities;
+﻿namespace LOCO.Bot.Shared.Data.Entities;
 
 public class Guess : IHaveId
 {
@@ -14,7 +14,7 @@ public class Guess : IHaveId
 
     public void Update(object guess)
     {
-        if(guess is Guess memberGuess)
+        if (guess is Guess memberGuess)
         {
             MemberName = memberGuess.MemberName;
             MemberId = memberGuess.MemberId;

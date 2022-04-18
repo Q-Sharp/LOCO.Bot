@@ -4,8 +4,8 @@ using Discord.WebSocket;
 
 using LOCO.Bot.Data;
 using LOCO.Bot.Discord.Helpers;
-using LOCO.Bot.Shared.Modules;
-using LOCO.Bot.Shared.Services;
+using LOCO.Bot.Shared.Discord.Modules;
+using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,7 +51,7 @@ public partial class CommandHandler : ICommandHandler
         if (logMessage.Exception is CommandException cmdException)
         {
             _logger.LogError("'{User}' failed to execute '{Name}' in '{Channel}'.",
-                cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel); 
+                cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel);
         }
 
         _logger.LogError("{Exception}", logMessage.Exception);
@@ -81,12 +81,16 @@ public partial class CommandHandler : ICommandHandler
     public async Task Client_HandleCommandAsync(SocketMessage arg)
     {
         if (arg is not SocketUserMessage msg)
+        {
             return;
+        }
 
         var context = new SocketCommandContext(_client, msg);
 
         if (msg.Author.Id == _client.CurrentUser.Id || msg.Author.IsBot)
+        {
             return;
+        }
 
         var pos = 0;
         if (msg.HasStringPrefix(_config["Discord:Prefix"], ref pos, StringComparison.OrdinalIgnoreCase)
@@ -121,7 +125,9 @@ public partial class CommandHandler : ICommandHandler
             if (result.IsSuccess)
             {
                 if (runTimeResult.Reason is not null)
+                {
                     _ = await context.Channel.SendMessageAsync(runTimeResult.Reason);
+                }
 
                 return;
             }
@@ -137,14 +143,18 @@ public partial class CommandHandler : ICommandHandler
         }
     }
 
-    private async static Task DeleteMessage(IMessage userMsg, IMessage answer)
+    private static async Task DeleteMessage(IMessage userMsg, IMessage answer)
     {
         await Task.Delay(TimeSpan.FromMinutes(2));
 
         if (userMsg is not null)
+        {
             await userMsg.DeleteAsync(new RequestOptions { AuditLogReason = "Autoremoved" });
+        }
 
         if (answer is not null)
+        {
             await answer.DeleteAsync(new RequestOptions { AuditLogReason = "Autoremoved" });
+        }
     }
 }

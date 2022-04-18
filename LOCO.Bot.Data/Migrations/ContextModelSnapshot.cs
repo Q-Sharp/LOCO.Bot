@@ -17,12 +17,12 @@ namespace LOCO.Bot.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.3")
+                .HasAnnotation("ProductVersion", "6.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LOCO.Bot.Shared.Entities.Guess", b =>
+            modelBuilder.Entity("LOCO.Bot.Shared.Data.Entities.Guess", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace LOCO.Bot.Data.Migrations
                     b.ToTable("Guess");
                 });
 
-            modelBuilder.Entity("LOCO.Bot.Shared.Entities.Restart", b =>
+            modelBuilder.Entity("LOCO.Bot.Shared.Data.Entities.Restart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -82,7 +82,7 @@ namespace LOCO.Bot.Data.Migrations
                     b.ToTable("Restart");
                 });
 
-            modelBuilder.Entity("LOCO.Bot.Shared.Entities.Setting", b =>
+            modelBuilder.Entity("LOCO.Bot.Shared.Data.Entities.Setting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -110,6 +110,70 @@ namespace LOCO.Bot.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Setting");
+                });
+
+            modelBuilder.Entity("LOCO.Bot.Shared.Data.Entities.WheelEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
+
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WheelEntry");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Color = "#8B0000",
+                            Qty = 5,
+                            Text = "1k RLB"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Color = "#FF4500",
+                            Qty = 3,
+                            Text = "5K RLB"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Color = "#008000",
+                            Qty = 2,
+                            Text = "20$ bonus buy"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Color = "#ADFF2F",
+                            Qty = 1,
+                            Text = "40$ bonus buy"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Color = "#FFD700",
+                            Qty = 1,
+                            Text = "100$ bonus buy"
+                        });
                 });
 #pragma warning restore 612, 618
         }
