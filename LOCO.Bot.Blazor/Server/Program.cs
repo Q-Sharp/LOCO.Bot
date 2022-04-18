@@ -85,11 +85,6 @@ services.AddAuthentication(opt =>
 
     c.Events = new OAuthEvents
     {
-        //OnCreatingTicket = async context =>
-        //{
-        //    var guildClaim = await DiscordHelpers.GetGuildClaims(context);
-        //    context.Identity.AddClaim(guildClaim);
-        //},
         OnAccessDenied = context =>
         {
             context.AccessDeniedPath = PathString.FromUriComponent("/");
@@ -99,7 +94,6 @@ services.AddAuthentication(opt =>
     };
 
     c.SaveTokens = true;
-    //c.Validate();
 });
 
 services.AddAuthorization(options =>
@@ -139,8 +133,8 @@ else
        .UseHsts()
        .UseCookiePolicy();
 
-    app.UseSecurityHeaders(SecurityHeadersDefinitions.GetHeaderPolicyCollection(app.Environment.IsDevelopment(),
-                    configuration["Discord:Authority"]));
+    //app.UseSecurityHeaders(SecurityHeadersDefinitions.GetHeaderPolicyCollection(app.Environment.IsDevelopment(),
+    //                configuration["Discord:Authority"]));
 }
 
 app.UseHttpsRedirection();
