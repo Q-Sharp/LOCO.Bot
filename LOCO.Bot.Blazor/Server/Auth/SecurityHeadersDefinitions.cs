@@ -17,13 +17,13 @@ public static class SecurityHeadersDefinitions
                     builder.AddBlockAllMixedContent();
                     builder.AddImgSrc()
                            .Self()
-                           .From("https://locowheel.mmbot.xyz/")
+                           .From("https://locowheel.mmbot.xyz")
                            .From("data:");
                     builder.AddFormAction().Self().From(idpHost);
                     builder.AddFontSrc()
                            .Self()
                            .From("https://fonts.googleapis.com")
-                           .From("https://locowheel.mmbot.xyz/")
+                           .From("https://locowheel.mmbot.xyz")
                            .OverHttps();
                     builder.AddBaseUri().Self();
                     builder.AddFrameAncestors().None();
@@ -32,9 +32,8 @@ public static class SecurityHeadersDefinitions
                     {
                         builder.AddStyleSrc()
                                .Self()
-                               .From("https://ajax.googleapis.com/")
-                               .From("https://static.cloudflareinsights.com/")
-                               .From("https://locowheel.mmbot.xyz/");
+                               .From("https://static.cloudflareinsights.com")
+                               .From("https://locowheel.mmbot.xyz");
 
                         // due to Blazor
                         builder.AddScriptSrc()
