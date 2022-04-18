@@ -34,11 +34,5 @@ public class Context : DbContext, IContext
     public async Task MigrateAsync()
         => await Database.MigrateAsync();
 
-    public async Task TruncateAsync(string tableName)
-    {
-        await Database.ExecuteSqlRawAsync($"TRUNCATE TABLE public.\"{tableName}\" CASCADE");
-
-        ChangeTracker.DetectChanges();
-    }
     public async Task SaveChangesAsync() => await base.SaveChangesAsync();
 }

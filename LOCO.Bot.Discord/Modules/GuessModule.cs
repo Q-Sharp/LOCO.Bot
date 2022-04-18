@@ -21,6 +21,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     }
 
     [Command("setGuessChannel")]
+    [Alias("sgc")]
     [Summary("set guessing channels")]
     [RequireUserPermission(ChannelPermission.ManageMessages)]
     public async Task<RuntimeResult> SetChannel(IChannel guessChannel)
@@ -38,6 +39,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     }
 
     [Command("setGuessRole")]
+    [Alias("sgr")]
     [Summary("set member role for guessings.")]
     [RequireUserPermission(ChannelPermission.ManageMessages)]
     public async Task<RuntimeResult> SetRole(IRole guessRole)
@@ -55,6 +57,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     }
 
     [Command("removeGuessRole")]
+    [Alias("rgr")]
     [Summary("remove role for guessings.")]
     [RequireUserPermission(ChannelPermission.ManageMessages)]
     public async Task<RuntimeResult> RemoveRole()
@@ -169,26 +172,45 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         if (result.Error != null)
             return result;
 
-        if (double.TryParse(endResult.PrepareForGuessing(), out var finalResult))
+        var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
+        if(settings.GuessingsPossible)
         {
-            var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
+            var stopResult = await Stop();
+            if (!stopResult.IsSuccess)
+                return FromError(CommandError.Unsuccessful, "Couldn't stop guessing!");
+        }
 
+        if (double.TryParse(endResult.PrepareForGuessing(), NumberStyles.Currency, new CultureInfo("en-US"), out var finalResult))
+        {
             var channel = Context.Guild.Channels.FirstOrDefault(c => c.Id == settings.GuessChannelId);
-
-            var closest = _ctx.Guess
+            var allGuesses = _ctx.Guess.ToList();
+            var closest = allGuesses
                 .OrderBy(n => Math.Abs(n.GuessAmount - finalResult))
-                .FirstOrDefault();
+                .ThenBy(n => n.Id)
+                .Take(10)
+                .ToList();
 
-            if (closest == null)
+            if (closest == null || closest.Count == 0)
             {
                 await (channel as ITextChannel).SendMessageAsync($"No guesses == no winners!");
             }
             else
             {
-                var member = Context.Guild.Users.FirstOrDefault(c => c.Id == closest.MemberId);
+                try
+                {
+                    var ranking = GetRanking(closest, $"${finalResult}");
+                    var first = closest.FirstOrDefault();
+                    var winner = Context.Guild.Users.FirstOrDefault(c => c.Id == first.MemberId);
 
-                await (channel as ITextChannel).SendMessageAsync($"Gratz: {member.Mention} was closest and won!!");
-                await _ctx.TruncateAsync("MemberGuess");
+                    await (channel as ITextChannel).SendMessageAsync(embed: ranking);
+                    await (channel as ITextChannel).SendMessageAsync($"Gratz: {winner?.Mention ?? first.MemberName} was closest and won!!");
+
+                    _ctx.Guess.RemoveRange(allGuesses);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Exception: {Exception} was thrown.", ex);
+                }
             }
 
             return FromSuccess("Winner was mentioned and Db is clear for next round!");
@@ -196,6 +218,48 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
 
         return FromError(CommandError.ParseFailed, "Wrong number format.");
     }
+
+    private static Embed GetRanking(IEnumerable<Guess> guesses, string result)
+    {
+        if (guesses is null || guesses.Count() <= 0)
+            return default;
+
+        var builder = new EmbedBuilder()
+        {
+            Color = new Color(114, 137, 218),
+            Description = $"Top 10 guesses for this result: {result}"
+        };
+
+        foreach (var guess in guesses.Select((x, i) => new { Rank = ++i, Guess = x }))
+        {
+            builder.AddField(x =>
+            {
+                x.Name = $"#{guess.Rank}";
+                x.Value = $"{guess.Guess.MemberName} (${guess.Guess.GuessAmount})";
+                x.IsInline = true;
+            });
+        }
+
+        return builder.Build();
+    }
+
+    //private static string GetRankingString(IEnumerable<Guess> guesses, string result)
+    //{
+    //    if (guesses is null || guesses.Count() <= 0)
+    //        return default;
+
+    //    var sb = new StringBuilder();
+
+    //    sb.AppendLine($"Top 10 guesses for this result: {result}");
+    //    sb.AppendLine("────────────────────────────");
+
+    //    foreach (var guess in guesses.Select((x, i) => new { Rank = ++i, Guess = x }))
+    //    {
+    //        sb.AppendLine($"#{guess.Rank} - {guess.Guess.MemberName} (${guess.Guess.GuessAmount})");
+    //    }
+
+    //    return sb.ToString();
+    //}
 
     private async Task<LOCOBotResult> CheckAsync(bool checkSettings = true, bool checkIfGuessesAccepted = true)
     {

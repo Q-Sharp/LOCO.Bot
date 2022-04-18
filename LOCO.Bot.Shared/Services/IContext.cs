@@ -11,6 +11,5 @@ public interface IContext
     DbSet<Restart> Restart { get; set; }
 
     Task MigrateAsync();
-    Task TruncateAsync(string tableName);
     Task SaveChangesAsync();
 }

@@ -46,14 +46,17 @@ public partial class CommandHandler : ICommandHandler
         _client.Disconnected += Client_Disconnected;
     }
 
-    public async Task LogAsync(LogMessage logMessage)
+    public Task LogAsync(LogMessage logMessage)
     {
         if (logMessage.Exception is CommandException cmdException)
         {
-            await cmdException.Context.Channel.SendMessageAsync("Something went catastrophically wrong!");
-            _logger.LogError("{User} failed to execute '{Name}' in {Channel}.",
-                cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel);
+            _logger.LogError("'{User}' failed to execute '{Name}' in '{Channel}'.",
+                cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel); 
         }
+
+        _logger.LogError("{Exception}", logMessage.Exception);
+
+        return Task.CompletedTask;
     }
 
     public async Task Client_Ready()
