@@ -6,6 +6,9 @@ using LOCO.Bot.Shared.Blazor.Defaults;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +39,14 @@ services.AddLogging(l => l.ClearProviders()
                           .AddSerilog(Log.Logger));
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+
+services.AddDataProtection()
+.UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
+{
+    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+})
+.SetApplicationName("LOCO.Wheel");
 
 var connectionString = configuration.GetConnectionString("Context");
 
