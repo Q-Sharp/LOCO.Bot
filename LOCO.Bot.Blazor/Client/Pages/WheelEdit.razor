@@ -1,0 +1,109 @@
+﻿@page "/wheeledit"
+
+@using System.Net.Http.Json
+@inject IAuthorizedAntiForgeryClientFactory httpClientFactory
+@inject ISnackbar Snackbar
+
+<MudTable Items="@WheelEntries" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit"
+          @bind-SelectedItem="selectedItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+          OnCommitEditClick="@(() => Snackbar.Add("Wheel Segment saved!"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+          RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@blockSwitch" RowEditNew>
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Wheel Segments</MudText>
+    </ToolBarContent>
+    <ColGroup>
+        <col style="width:100px;" />
+        <col style="width:50%;" />
+        <col style="width:50px;" />
+    </ColGroup>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Color)">Color</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Text)">Text</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<WheelEntry, object>(x => x.Qty)">Qty</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nr">@context.Color</MudTd>
+        <MudTd DataLabel="Sign">@context.Text</MudTd>
+        <MudTd DataLabel="Name">@context.Qty</MudTd>
+    </RowTemplate>
+    <RowEditingTemplate>
+        <MudTd DataLabel="Color">
+            <MudTextField @bind-Value="@context.Color" Required />
+        </MudTd>
+        <MudTd DataLabel="Text">
+            <MudTextField @bind-Value="@context.Text" Required />
+        </MudTd>
+        <MudTd DataLabel="Qty">
+            <MudTextField @bind-Value="@context.Qty" Required />
+        </MudTd>
+    </RowEditingTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@*<MudText Inline="true">Selected: @selectedItem.Text</MudText>
+<div class="d-flex">
+    <MudSpacer />
+    <MudButton Class="mt-3" ButtonType="ButtonType.Button" Variant="Variant.Filled" OnClick="AddNew">New</MudButton>
+</div>*@
+
+@code {
+    private List<string> editEvents = new();
+    private bool dense = false;
+    private bool hover = true;
+    private bool ronly = false;
+    private bool canCancelEdit = true;
+    private bool blockSwitch = false;
+
+    private WheelEntry selectedItem = null;
+    private WheelEntry elementBeforeEdit;
+    private HashSet<WheelEntry> selectedItems1 = new HashSet<WheelEntry>();
+
+    private ICollection<WheelEntry> WheelEntries = new List<WheelEntry>();
+
+    protected override async Task OnInitializedAsync() =>  await LoadEntries();
+
+    private async Task LoadEntries()
+    {
+        var httpClient = await httpClientFactory.CreateClient();
+        WheelEntries = await httpClient.GetFromJsonAsync<WheelEntry[]>("api/wheel");
+    }
+
+    private void BackupItem(object wheelEntry)
+    {
+        elementBeforeEdit = new()
+        {
+            Id = ((WheelEntry)wheelEntry).Id,
+            Color = ((WheelEntry)wheelEntry).Color,
+            Text = ((WheelEntry)wheelEntry).Text,
+            Qty = ((WheelEntry)wheelEntry).Qty
+        };
+    }
+
+    private void AddNew()
+    {
+        var we = new WheelEntry();
+        WheelEntries.Add(we);
+        selectedItem = we;
+    }
+
+    private async void ItemHasBeenCommitted(object wheelEntry)
+    {
+        var httpClient = await httpClientFactory.CreateClient();
+        await httpClient.PostAsJsonAsync<WheelEntry>("api/wheel", wheelEntry as WheelEntry);
+
+        await LoadEntries();
+    }
+
+    private void ResetItemToOriginalValues(object wheelEntry)
+    {
+        ((WheelEntry)wheelEntry).Id = elementBeforeEdit.Id;
+        ((WheelEntry)wheelEntry).Color = elementBeforeEdit.Color;
+        ((WheelEntry)wheelEntry).Text = elementBeforeEdit.Text;
+        ((WheelEntry)wheelEntry).Qty = elementBeforeEdit.Qty;
+
+        if (elementBeforeEdit.Id == 0)
+            WheelEntries.Remove((WheelEntry)wheelEntry);
+    }
+}

@@ -11,12 +11,13 @@ public class WheelEntry : IHaveId
 
     public int Qty { get; set; }
 
-    public void Update(object guess)
+    public void Update(object wheelEntry)
     {
-        if (guess is WheelEntry setting)
+        if (wheelEntry is WheelEntry we)
         {
-            Text = setting.Text;
-            Color = setting.Color;
+            Text = we.Text;
+            Color = we.Color;
+            Qty = we.Qty;
         }
     }
 }

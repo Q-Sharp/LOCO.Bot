@@ -1,4 +1,5 @@
 ﻿using LOCO.Bot.Data;
+using LOCO.Bot.Shared.Data.Entities;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,6 +24,24 @@ public class WheelController : ApiControllerBase<WheelController>
         catch (Exception ex)
         {
             _logger.LogError(ex, "GetEntries Exception", ex);
+        }
+
+        return BadRequest();
+    }
+
+    [HttpPost]
+    public IActionResult UpdateEntry(WheelEntry we)
+    {
+        try
+        {
+            _ctx.WheelEntry.FirstOrDefault(x => x.Id == we.Id).Update(we);
+            _ctx.SaveChanges();
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "UpdateEntry Exception", ex);
         }
 
         return BadRequest();
