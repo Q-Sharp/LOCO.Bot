@@ -88,6 +88,13 @@ services.AddRazorPages();
 services.AddSession()
         .AddHttpContextAccessor();
 
+services.AddResponseCompression(options =>
+{
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+    options.EnableForHttps = true;
+});
+
 services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.KnownProxies.Add(IPAddress.Any);
@@ -112,13 +119,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
-
-services.AddResponseCompression(options =>
-{
-    options.Providers.Add<BrotliCompressionProvider>();
-    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
-    options.EnableForHttps = true;
-});
 
 app.UseStaticFiles(new StaticFileOptions
 {
