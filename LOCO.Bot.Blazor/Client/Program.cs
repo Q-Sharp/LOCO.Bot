@@ -41,8 +41,8 @@ builder.Services.AddAuthorizationCore(options =>
     });
 });
 
-builder.Services.TryAddSingleton<AuthenticationStateProvider, LOCOBotAuthenticationStateProvider>();
-builder.Services.TryAddSingleton(sp => (LOCOBotAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
+builder.Services.TryAddSingleton<AuthenticationStateProvider, LOCOAuthenticationStateProvider>();
+builder.Services.TryAddSingleton(sp => (LOCOAuthenticationStateProvider)sp.GetRequiredService<AuthenticationStateProvider>());
 builder.Services.AddTransient<AuthorizedHandler>();
 
 builder.RootComponents.Add<App>("#app");
@@ -62,7 +62,7 @@ builder.Services.AddHttpClient("authorizedClient", client =>
 
 builder.Services.AddTransient(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("default"));
 
-builder.Services.AddTransient<IAuthorizedAntiForgeryClientFactory, AuthorizedAntiForgeryClientFactory>();
+builder.Services.AddTransient<IAuthorizedClientFactory, AuthorizedClientFactory>();
 
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddMudServices();

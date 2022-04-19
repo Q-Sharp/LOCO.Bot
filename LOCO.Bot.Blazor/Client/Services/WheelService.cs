@@ -9,9 +9,9 @@ namespace LOCO.Bot.Blazor.Client.Services;
 public class WheelService : IWheelService
 {
     private readonly ILogger<WheelService> _logger;
-    private readonly IAuthorizedAntiForgeryClientFactory _clientFactory;
+    private readonly IAuthorizedClientFactory _clientFactory;
 
-    public WheelService(ILogger<WheelService> logger, IAuthorizedAntiForgeryClientFactory clientFactory)
+    public WheelService(ILogger<WheelService> logger, IAuthorizedClientFactory clientFactory)
     {
         _logger = logger;
         _clientFactory = clientFactory;
@@ -21,7 +21,7 @@ public class WheelService : IWheelService
     {
         try
         {
-            var http = await _clientFactory.CreateClient();
+            var http = _clientFactory.CreateClient();
 
             var apiWheels = await http.GetFromJsonAsync<WheelEntry[]>("api/wheel");
 

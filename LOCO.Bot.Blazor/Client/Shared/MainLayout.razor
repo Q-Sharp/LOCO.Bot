@@ -1,6 +1,6 @@
 ﻿@inject NavigationManager NavigationManager
 @inject ISessionStorageService SessionStorage
-@inject LOCOBotAuthenticationStateProvider AuthProvider
+@inject LOCOAuthenticationStateProvider AuthProvider
 @inherits LayoutComponentBase
 
 <MudDialogProvider />
@@ -46,8 +46,10 @@
 
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <MudNavMenu>
-            <MudNavLink Href="/" Match="NavLinkMatch.All">Home</MudNavLink>
-            <MudNavLink Href="/wheeledit" Match="NavLinkMatch.All">Edit wheel values</MudNavLink>
+            <MudNavGroup Title="Wheel" Expanded="true">
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Filled.Accessible">Home</MudNavLink>
+                <MudNavLink Href="/wheeledit" Match="NavLinkMatch.All" Icon="@Icons.Filled.Settings">Configuration</MudNavLink>
+            </MudNavGroup>
         </MudNavMenu>
     </MudDrawer>
 
@@ -98,15 +100,11 @@
         }
     };
 
-    void DrawerToggle()
-    {
-        _drawerOpen = !_drawerOpen;
-    }
+    void DrawerToggle() 
+        => _drawerOpen = !_drawerOpen;
 
     public IDCUser loggedUser { get; set; }
 
-    protected async override Task OnAfterRenderAsync(bool firstRender)
-    {
-        loggedUser = await AuthProvider.GetCurrentUser();
-    }
+    protected async override Task OnAfterRenderAsync(bool firstRender) 
+        => loggedUser = await AuthProvider.GetCurrentUser();
 }

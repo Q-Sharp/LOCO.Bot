@@ -1,13 +1,12 @@
-﻿
-using System.Net;
+﻿using System.Net;
 
 namespace LOCO.Bot.Blazor.Client.Auth;
 
 public class AuthorizedHandler : DelegatingHandler
 {
-    private readonly LOCOBotAuthenticationStateProvider _authenticationStateProvider;
+    private readonly LOCOAuthenticationStateProvider _authenticationStateProvider;
 
-    public AuthorizedHandler(LOCOBotAuthenticationStateProvider authenticationStateProvider) => _authenticationStateProvider = authenticationStateProvider;
+    public AuthorizedHandler(LOCOAuthenticationStateProvider authenticationStateProvider) => _authenticationStateProvider = authenticationStateProvider;
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,

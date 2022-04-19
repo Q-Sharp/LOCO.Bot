@@ -1,20 +1,19 @@
 ﻿@page "/wheeledit"
+@using MudBlazor.Utilities
 
-@using System.Net.Http.Json
-@inject IAuthorizedAntiForgeryClientFactory httpClientFactory
+@inject IAuthorizedClientFactory httpClientFactory
 @inject ISnackbar Snackbar
 
-<MudTable Items="@WheelEntries" Dense="@dense" Hover="@hover" ReadOnly="@ronly" CanCancelEdit="@canCancelEdit"
-          @bind-SelectedItem="selectedItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+<MudTable Items="@WheelEntries" Hover="true" CanCancelEdit="true" @bind-SelectedItem="selectedItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
           OnCommitEditClick="@(() => Snackbar.Add("Wheel Segment saved!"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-          RowEditCommit="ItemHasBeenCommitted" IsEditRowSwitchingBlocked="@blockSwitch" RowEditNew>
+          RowEditCommit="ItemHasBeenCommitted">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Wheel Segments</MudText>
     </ToolBarContent>
     <ColGroup>
-        <col style="width:100px;" />
+        <col style="width:200px;" />
         <col style="width:50%;" />
-        <col style="width:50px;" />
+        <col style="width:100px;" />
     </ColGroup>
     <HeaderContent>
         <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Color)">Color</MudTableSortLabel></MudTh>
@@ -28,15 +27,26 @@
     </RowTemplate>
     <RowEditingTemplate>
         <MudTd DataLabel="Color">
-            <MudTextField @bind-Value="@context.Color" Required />
+            <MudColorPicker Style="@($"color: {@context.Color};")" ColorPickerView="ColorPickerView.Spectrum" @bind-Text="@context.Color" @bind-Value="@selectedColor" ColorPickerMode="ColorPickerMode.HEX" DisableToolbar="true" DisableAlpha="true" DisableInputs="true" />
         </MudTd>
         <MudTd DataLabel="Text">
             <MudTextField @bind-Value="@context.Text" Required />
         </MudTd>
         <MudTd DataLabel="Qty">
-            <MudTextField @bind-Value="@context.Qty" Required />
+            <MudNumericField @bind-Value="@context.Qty" Required Min="0" />
         </MudTd>
     </RowEditingTemplate>
+    <RowTemplate>
+        <MudTd DataLabel="Color" Style="@($"color: {@context.Color};")">
+            @context.Color
+        </MudTd>
+        <MudTd DataLabel="Text">
+            @context.Text
+        </MudTd>
+        <MudTd DataLabel="Qty">
+            @context.Qty
+        </MudTd>
+    </RowTemplate>
     <PagerContent>
         <MudTablePager />
     </PagerContent>
@@ -49,12 +59,9 @@
 </div>*@
 
 @code {
+    private MudColor selectedColor;
+
     private List<string> editEvents = new();
-    private bool dense = false;
-    private bool hover = true;
-    private bool ronly = false;
-    private bool canCancelEdit = true;
-    private bool blockSwitch = false;
 
     private WheelEntry selectedItem = null;
     private WheelEntry elementBeforeEdit;
@@ -66,19 +73,24 @@
 
     private async Task LoadEntries()
     {
-        var httpClient = await httpClientFactory.CreateClient();
+        var httpClient = httpClientFactory.CreateClient();
         WheelEntries = await httpClient.GetFromJsonAsync<WheelEntry[]>("api/wheel");
     }
 
-    private void BackupItem(object wheelEntry)
+    private void BackupItem(object item)
     {
-        elementBeforeEdit = new()
+        if (item is WheelEntry wheelEntry)
         {
-            Id = ((WheelEntry)wheelEntry).Id,
-            Color = ((WheelEntry)wheelEntry).Color,
-            Text = ((WheelEntry)wheelEntry).Text,
-            Qty = ((WheelEntry)wheelEntry).Qty
-        };
+            selectedColor = new MudColor(wheelEntry.Color);
+
+            elementBeforeEdit = new()
+            {
+                Id = wheelEntry.Id,
+                Color = wheelEntry.Color,
+                Text = wheelEntry.Text,
+                Qty = wheelEntry.Qty
+            };
+        }
     }
 
     private void AddNew()
@@ -88,22 +100,28 @@
         selectedItem = we;
     }
 
-    private async void ItemHasBeenCommitted(object wheelEntry)
+    private async void ItemHasBeenCommitted(object item)
     {
-        var httpClient = await httpClientFactory.CreateClient();
-        await httpClient.PostAsJsonAsync<WheelEntry>("api/wheel", wheelEntry as WheelEntry);
+        if (item is WheelEntry wheelEntry)
+        {
+            var httpClient = httpClientFactory.CreateClient();
+            await httpClient.PostAsJsonAsync<WheelEntry>("api/wheel", wheelEntry);
 
-        await LoadEntries();
+            await LoadEntries();
+        }
     }
 
-    private void ResetItemToOriginalValues(object wheelEntry)
+    private void ResetItemToOriginalValues(object item)
     {
-        ((WheelEntry)wheelEntry).Id = elementBeforeEdit.Id;
-        ((WheelEntry)wheelEntry).Color = elementBeforeEdit.Color;
-        ((WheelEntry)wheelEntry).Text = elementBeforeEdit.Text;
-        ((WheelEntry)wheelEntry).Qty = elementBeforeEdit.Qty;
+         if (item is WheelEntry wheelEntry)
+         {
+            wheelEntry.Id = elementBeforeEdit.Id;
+            wheelEntry.Color = elementBeforeEdit.Color;
+            wheelEntry.Text = elementBeforeEdit.Text;
+            wheelEntry.Qty = elementBeforeEdit.Qty;
 
-        if (elementBeforeEdit.Id == 0)
-            WheelEntries.Remove((WheelEntry)wheelEntry);
+            if (elementBeforeEdit.Id == 0)
+                WheelEntries.Remove(wheelEntry);
+         }
     }
 }

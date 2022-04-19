@@ -35,16 +35,6 @@ Log.Logger = new LoggerConfiguration()
 services.AddLogging(l => l.ClearProviders()
                           .AddSerilog(Log.Logger));
 
-builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
-
-//services.AddDataProtection()
-//.UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
-//{
-//    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-//    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-//})
-//.SetApplicationName("LOCO.Wheel");
-
 var connectionString = configuration.GetConnectionString("Context");
 
 services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
@@ -52,13 +42,6 @@ services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
 services.AddSingleton<ITicketStore, LOCOTicketStore>();
 services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
         .Configure<ITicketStore>((options, store) => options.SessionStore = store);
-
-//services.AddAntiforgery(options =>
-//{
-//    options.HeaderName = AntiforgeryDefaults.Headername;
-//    options.Cookie.Name = AntiforgeryDefaults.Cookiename;
-//    options.Cookie.SameSite = SameSiteMode.Strict;
-//});
 
 services.AddHttpClient();
 services.AddOptions();
@@ -68,10 +51,7 @@ services.AddAuthentication(opt =>
     opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = DiscordAuthenticationDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
-{
-    options.ExpireTimeSpan = TimeSpan.FromDays(30);
-})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddDiscord(DiscordAuthenticationDefaults.AuthenticationScheme, c =>
 {
     c.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -101,7 +81,7 @@ services.AddAuthorization(options =>
     });
 });
 
-services.AddControllersWithViews(/*o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute())*/);
+services.AddControllers();
 services.AddRazorPages();
 
 services.AddSession()
@@ -127,9 +107,6 @@ else
        .UseExceptionHandler("/Error")
        .UseHsts()
        .UseCookiePolicy();
-
-    //app.UseSecurityHeaders(SecurityHeadersDefinitions.GetHeaderPolicyCollection(app.Environment.IsDevelopment(),
-    //                configuration["Discord:Authority"]));
 }
 
 app.UseHttpsRedirection();

@@ -9,18 +9,18 @@ using System.Security.Claims;
 
 namespace LOCO.Bot.Blazor.Client.Auth;
 
-public class LOCOBotAuthenticationStateProvider : AuthenticationStateProvider
+public class LOCOAuthenticationStateProvider : AuthenticationStateProvider
 {
     private static readonly TimeSpan _userCacheRefreshInterval = TimeSpan.FromSeconds(60);
 
     private readonly NavigationManager _navigation;
     private readonly HttpClient _client;
-    private readonly ILogger<LOCOBotAuthenticationStateProvider> _logger;
+    private readonly ILogger<LOCOAuthenticationStateProvider> _logger;
 
     private DateTimeOffset _userLastCheck = DateTimeOffset.FromUnixTimeSeconds(0);
     private ClaimsPrincipal _cachedUser = new(new ClaimsIdentity());
 
-    public LOCOBotAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<LOCOBotAuthenticationStateProvider> logger)
+    public LOCOAuthenticationStateProvider(NavigationManager navigation, HttpClient client, ILogger<LOCOAuthenticationStateProvider> logger)
     {
         _navigation = navigation;
         _client = client;
@@ -88,7 +88,7 @@ public class LOCOBotAuthenticationStateProvider : AuthenticationStateProvider
         }
 
         var identity = new ClaimsIdentity(
-                nameof(LOCOBotAuthenticationStateProvider),
+                nameof(LOCOAuthenticationStateProvider),
                 user.NameClaimType,
                 user.RoleClaimType);
 

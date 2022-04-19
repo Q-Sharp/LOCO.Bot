@@ -1,5 +1,4 @@
-﻿using AspNet.Security.OAuth.Discord;
-
+﻿
 using LOCO.Bot.Data;
 using LOCO.Bot.Shared.Blazor.Auth;
 using LOCO.Bot.Shared.Blazor.Defaults;
@@ -78,11 +77,11 @@ public class UserController : ControllerBase
         RedirectUri = !string.IsNullOrEmpty(returnUrl) ? returnUrl : "/",
     });
 
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme)]
     [HttpGet(ApiAuthDefaults.LogOut)]
     public async Task<IActionResult> LogOut()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignOutAsync(DiscordAuthenticationDefaults.AuthenticationScheme);
         return Redirect("/");
     }
 }
