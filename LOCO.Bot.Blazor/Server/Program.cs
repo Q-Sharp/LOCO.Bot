@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 
 using Serilog;
@@ -111,6 +112,13 @@ else
 
 app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
+
+services.AddResponseCompression(options =>
+{
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+    options.EnableForHttps = true;
+});
 
 app.UseStaticFiles(new StaticFileOptions
 {
