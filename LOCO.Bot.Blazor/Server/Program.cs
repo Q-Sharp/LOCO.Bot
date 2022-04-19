@@ -37,13 +37,13 @@ services.AddLogging(l => l.ClearProviders()
 
 builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
-services.AddDataProtection()
-.UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
-{
-    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
-    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
-})
-.SetApplicationName("LOCO.Wheel");
+//services.AddDataProtection()
+//.UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration()
+//{
+//    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+//    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+//})
+//.SetApplicationName("LOCO.Wheel");
 
 var connectionString = configuration.GetConnectionString("Context");
 
@@ -51,18 +51,14 @@ services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
 
 services.AddSingleton<ITicketStore, LOCOTicketStore>();
 services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
-        .Configure<ITicketStore>((options, store) =>
-        {
-            options.SessionStore = store;
-            options.ExpireTimeSpan = TimeSpan.FromDays(30);
-        });
+        .Configure<ITicketStore>((options, store) => options.SessionStore = store);
 
-services.AddAntiforgery(options =>
-{
-    options.HeaderName = AntiforgeryDefaults.Headername;
-    options.Cookie.Name = AntiforgeryDefaults.Cookiename;
-    options.Cookie.SameSite = SameSiteMode.Strict;
-});
+//services.AddAntiforgery(options =>
+//{
+//    options.HeaderName = AntiforgeryDefaults.Headername;
+//    options.Cookie.Name = AntiforgeryDefaults.Cookiename;
+//    options.Cookie.SameSite = SameSiteMode.Strict;
+//});
 
 services.AddHttpClient();
 services.AddOptions();
@@ -74,7 +70,6 @@ services.AddAuthentication(opt =>
 })
 .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
-    options.Cookie.SameSite = SameSiteMode.Lax;
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
 })
 .AddDiscord(DiscordAuthenticationDefaults.AuthenticationScheme, c =>
@@ -106,7 +101,7 @@ services.AddAuthorization(options =>
     });
 });
 
-services.AddControllersWithViews(o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+services.AddControllersWithViews(/*o => o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute())*/);
 services.AddRazorPages();
 
 services.AddSession()
