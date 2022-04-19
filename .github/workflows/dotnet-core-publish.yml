@@ -52,7 +52,7 @@ jobs:
           TARGET: ${{ secrets.REMOTE_TARGET }}
 
     - name: .NET Publish
-      run: dotnet publish ./LOCO.Bot.Blazor/Server/LOCO.Bot.Blazor.Server.csproj -c Release -r linux-x64 /p:PublishReadyToRun=false /p:DebugType=None /p:DebugSymbols=false
+      run: dotnet publish ./LOCO.Bot.Blazor/Server/LOCO.Bot.Blazor.Server.csproj -c Release -r linux-x64 --self-contained /p:PublishReadyToRun=false /p:DebugType=None /p:DebugSymbols=false
 
     - name: App Settings Variable Substitution
       uses: microsoft/variable-substitution@v1
