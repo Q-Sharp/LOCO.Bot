@@ -73,3 +73,12 @@ jobs:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
           TARGET: ${{ secrets.REMOTE_TARGET2 }}
+          
+    - name: ls -a via ssh
+      uses: fifsky/ssh-action@v0.0.6
+      with:
+       command: "sudo systemctl restart kestrel-loco"
+       host: ${{ secrets.REMOTE_HOST }}
+       user: ${{ secrets.REMOTE_USER }}
+       key: ${{ secrets.SERVER_SSH_KEY }}
+
