@@ -18,10 +18,10 @@
                     <MudItem xs="12">
                         <MudGrid Spacing="5" Justify="Justify.FlexEnd">
                             <MudItem>
-                                <MudAvatar Image="@loggedUser.AvatarUrl"/>
+                                <MudAvatar Image="@loggedUser?.AvatarUrl"/>
                             </MudItem>
                             <MudItem>
-                                <MudText Typo="Typo.h6">Hello, @loggedUser.Name!</MudText>
+                                <MudText Typo="Typo.h6">Hello, @loggedUser?.Name!</MudText>
                             </MudItem>
                             <MudItem>
                                 <MudLink Typo="Typo.h6" Color="Color.Inherit" Href="@ApiAuthDefaults.LogOutPath">Log out</MudLink>
@@ -35,7 +35,7 @@
                     <MudItem xs="12">
                         <MudGrid Spacing="5" Justify="Justify.FlexEnd">
                             <MudItem>
-                                <MudLink Typo="Typo.h6" Class="ml-3" Href="@ApiAuthDefaults.LogInPath">Log in</MudLink>
+                                <MudLink Typo="Typo.h6" Class="ml-3" Href="@ApiAuthDefaults.LogInPath" @onclick="LogInClicked">Log in</MudLink>
                             </MudItem>
                         </MudGrid>
                     </MudItem>
@@ -105,6 +105,21 @@
 
     public IDCUser loggedUser { get; set; }
 
-    protected async override Task OnAfterRenderAsync(bool firstRender) 
-        => loggedUser = await AuthProvider.GetCurrentUser();
+    protected async override Task OnInitializedAsync()
+    {
+        loggedUser = await AuthProvider.GetCurrentUser();
+
+        var loc = await SessionStorage.GetItemAsync<Uri>(SessionStoreDefaults.Nav);
+
+        if(loc is not null)
+        {
+            NavigationManager.NavigateTo(loc.LocalPath);
+            await SessionStorage.RemoveItemAsync(SessionStoreDefaults.Nav);
+        }
+    }
+
+    private void LogInClicked(MouseEventArgs args)
+    {
+        SessionStorage.SetItemAsync<Uri>(SessionStoreDefaults.Nav, new Uri(NavigationManager.Uri));
+    }
 }

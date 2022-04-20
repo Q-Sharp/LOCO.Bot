@@ -42,7 +42,12 @@ services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
 
 services.AddSingleton<ITicketStore, LOCOTicketStore>();
 services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
-        .Configure<ITicketStore>((options, store) => options.SessionStore = store);
+        .Configure<ITicketStore>((options, store) =>
+        {
+            options.SessionStore = store;
+            options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            options.Cookie.MaxAge = TimeSpan.FromDays(30);
+        });
 
 services.AddHttpClient();
 services.AddOptions();

@@ -2,5 +2,5 @@
 
 public static class SessionStoreDefaults
 {
-    public const string GuildId = "GuildId";
+    public const string Nav = "Nav";
 }

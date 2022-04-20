@@ -34,10 +34,37 @@ public class WheelController : ApiControllerBase<WheelController>
     {
         try
         {
-            _ctx.WheelEntry.FirstOrDefault(x => x.Id == we.Id).Update(we);
-            _ctx.SaveChanges();
+            var dbWE = _ctx.WheelEntry.FirstOrDefault(x => x.Id == we.Id);
 
+            if (dbWE is null)
+                _ctx.WheelEntry.Add(we);
+            else
+                dbWE.Update(we);
+
+            _ctx.SaveChanges();
             return Ok();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "UpdateEntry Exception", ex);
+        }
+
+        return BadRequest();
+    }
+
+    [HttpDelete("delete/{id}")]
+    public IActionResult Delete(int id)
+    {
+        try
+        {
+            var dbWE = _ctx.WheelEntry.FirstOrDefault(x => x.Id == id);
+
+            if (dbWE is not null)
+            {
+                _ctx.Remove(dbWE);
+                _ctx.SaveChanges();
+                return Ok();
+            }            
         }
         catch (Exception ex)
         {
