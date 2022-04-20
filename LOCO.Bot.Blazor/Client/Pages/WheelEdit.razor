@@ -3,7 +3,7 @@
 @inject IAuthorizedClientFactory httpClientFactory
 @inject ISnackbar Snackbar
 
-<MudTable @ref="_table" Items="@WheelEntries" Hover="true" @bind-SelectedItem="selectedItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+<MudTable Items="@WheelEntries" Hover="true" @bind-SelectedItem="selectedItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
           OnCommitEditClick="@(() => Snackbar.Add("Wheel Segment saved!"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
           RowEditCommit="ItemHasBeenCommitted">
     <ToolBarContent>
