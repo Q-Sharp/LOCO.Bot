@@ -2,6 +2,8 @@
 
 public static class ApiAuthDefaults
 {
+    public const string CookieName = "__X-AUTH-TOKEN";
+
     public const string PolicyName = "IdPolicy";
 
     public const string UserPath = "api/User";

@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 using Serilog;
 
@@ -40,15 +41,6 @@ var connectionString = configuration.GetConnectionString("Context");
 
 services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
 
-services.AddSingleton<ITicketStore, LOCOTicketStore>();
-services.AddOptions<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme)
-        .Configure<ITicketStore>((options, store) =>
-        {
-            options.SessionStore = store;
-            options.ExpireTimeSpan = TimeSpan.FromDays(30);
-            options.Cookie.MaxAge = TimeSpan.FromDays(30);
-        });
-
 services.AddHttpClient();
 services.AddOptions();
 
@@ -57,14 +49,19 @@ services.AddAuthentication(opt =>
     opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     opt.DefaultChallengeScheme = DiscordAuthenticationDefaults.AuthenticationScheme;
 })
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme)
-.AddDiscord(DiscordAuthenticationDefaults.AuthenticationScheme, c =>
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
 {
-    c.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    c.ClientId = configuration["Discord:AppId"];
-    c.ClientSecret = configuration["Discord:AppSecret"];
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.Cookie.MaxAge = TimeSpan.FromDays(30);
+    options.Cookie.Name = ApiAuthDefaults.CookieName;
+})
+.AddDiscord(DiscordAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.ClientId = configuration["Discord:AppId"];
+    options.ClientSecret = configuration["Discord:AppSecret"];
 
-    c.Events = new OAuthEvents
+    options.Events = new OAuthEvents
     {
         OnAccessDenied = context =>
         {
@@ -74,7 +71,7 @@ services.AddAuthentication(opt =>
         }
     };
 
-    c.SaveTokens = true;
+    options.SaveTokens = true;
 });
 
 services.AddAuthorization(options =>
