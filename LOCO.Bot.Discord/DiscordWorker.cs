@@ -51,7 +51,7 @@ public class DiscordWorker : BackgroundService
         }
         catch (Exception e)
         {
-            _logger.LogError("Migration failed", e);
+            _logger.LogError(e, "Migration failed: {e}", e.Message);
             return;
         }
 

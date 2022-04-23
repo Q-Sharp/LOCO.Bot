@@ -9,8 +9,7 @@ SelfLog.Enable(l => Console.WriteLine(l));
 try
 {
     using var hb = DiscordSocketHost.CreateDiscordSocketHost(args)?.Build();
-    _ = hb.RunAsync();
-    hb.WaitForShutdown();
+    await hb.RunAsync();
 }
 catch (Exception e)
 {

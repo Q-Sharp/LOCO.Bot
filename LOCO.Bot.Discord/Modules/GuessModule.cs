@@ -104,7 +104,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     }
 
     [Command("stopGuessing")]
-    [Alias("EndGuess", "eg")]
+    [Alias("endGuessing", "eg")]
     [Summary("stop accepting guesses.")]
     [RequireUserPermission(ChannelPermission.ManageChannels)]
     public async Task<RuntimeResult> Stop()
@@ -210,14 +210,15 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
             {
                 try
                 {
-                    var ranking = GetRanking(closest, $"${finalResult}");
-                    var first = closest.FirstOrDefault();
-                    var winner = Context.Guild.Users.FirstOrDefault(c => c.Id == first.MemberId);
+                    var closestWithMention = closest.Select(guess => (guess, Context.Guild.Users.FirstOrDefault(c => c.Id == guess.MemberId).Mention));
+                    var ranking = GetRanking(closestWithMention, $"${finalResult}");
+                    var first = closestWithMention.FirstOrDefault();
 
                     await (channel as ITextChannel).SendMessageAsync(embed: ranking);
-                    await (channel as ITextChannel).SendMessageAsync($"Gratz: {winner?.Mention ?? first.MemberName} was closest and won!!");
+                    await (channel as ITextChannel).SendMessageAsync($"Gratz: {first.Mention ?? first.guess.MemberName} was closest and won!!");
 
                     _ctx.Guess.RemoveRange(allGuesses);
+                    await _ctx.SaveChangesAsync();
                 }
                 catch (Exception ex)
                 {
@@ -231,7 +232,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         return FromError(CommandError.ParseFailed, "Wrong number format.");
     }
 
-    private static Embed GetRanking(IEnumerable<Guess> guesses, string result)
+    private static Embed GetRanking(IEnumerable<(Guess, string)> guesses, string result)
     {
         if (guesses is null || guesses.Count() <= 0)
         {
@@ -244,12 +245,12 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
             Description = $"Top 10 guesses for this result: {result}"
         };
 
-        foreach (var guess in guesses.Select((x, i) => new { Rank = ++i, Guess = x }))
+        foreach (var guess in guesses.Select((x, i) => new { Rank = ++i, Guess = x.Item1, Mention = x.Item2 }))
         {
             builder.AddField(x =>
             {
                 x.Name = $"#{guess.Rank}";
-                x.Value = $"{guess.Guess.MemberName} (${guess.Guess.GuessAmount})";
+                x.Value = $"{guess.Mention ?? guess.Guess.MemberName} (${guess.Guess.GuessAmount})";
                 x.IsInline = true;
             });
         }

@@ -38,14 +38,15 @@ public static class DiscordSocketHost
     .AddSingleton(o => new DiscordSocketClient(new DiscordSocketConfig
     {
         LogLevel = Enum.Parse<LogSeverity>(discordConfig.GetValue<string>("LogLevel"), true),
-        MessageCacheSize = discordConfig.GetValue<int>("MessageCacheSize")
+        MessageCacheSize = discordConfig.GetValue<int>("MessageCacheSize"),
+        AlwaysDownloadUsers = true
     }))
     .AddSingleton(s => new CommandService(new CommandServiceConfig
     {
         LogLevel = discordConfig.GetValue<LogSeverity>("LogLevel"),
         CaseSensitiveCommands = discordConfig.GetValue<bool>("CaseSensitiveCommands"),
         DefaultRunMode = discordConfig.GetValue<RunMode>("DefaultRunMode"),
-        SeparatorChar = discordConfig.GetValue<string>("SeparatorChar").FirstOrDefault(),
+        SeparatorChar = discordConfig.GetValue<string>("SeparatorChar").FirstOrDefault()
     }))
     .AddSingleton<ICommandHandler, CommandHandler>()
     .AddSingleton<ISettingService, SettingService>()

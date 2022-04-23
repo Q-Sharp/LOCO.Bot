@@ -54,7 +54,8 @@ public partial class CommandHandler : ICommandHandler
                 cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel);
         }
 
-        _logger.LogError("{Exception}", logMessage.Exception);
+        if(logMessage.Exception is not null)
+            _logger.LogError("{Exception}", logMessage.Exception);
 
         return Task.CompletedTask;
     }
