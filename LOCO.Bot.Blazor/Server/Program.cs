@@ -1,19 +1,13 @@
 using AspNet.Security.OAuth.Discord;
 
-using LOCO.Bot.Blazor.Server.Auth;
 using LOCO.Bot.Data;
 using LOCO.Bot.Shared.Blazor.Defaults;
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 using Serilog;
 

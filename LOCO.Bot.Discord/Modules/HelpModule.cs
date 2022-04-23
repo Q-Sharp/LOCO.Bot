@@ -50,20 +50,29 @@ public class HelpModule : LOCOBotModule<HelpModule>
                     continue;
                 }
 
+                var alias = cmd.Aliases?.Where(x => string.Compare(x, cmd.Name, true) != 0).ToArray() ?? Array.Empty<string>();
                 var args = string.Join(" ", cmd.Parameters?.Select(x => $"[{x.Name}]").ToArray() ?? Array.Empty<string>());
 
                 if (string.Equals(cmd.Name, module.Group, StringComparison.InvariantCultureIgnoreCase))
                 {
                     description += $"{prefix}{module.Group} {args}{Environment.NewLine}";
+                    foreach(var a in alias)
+                        description += $"shortcut: {prefix}{a} {args}{Environment.NewLine}";
                 }
                 else if (string.IsNullOrWhiteSpace(module.Group))
                 {
                     description += $"{prefix}{cmd.Name} {args}{Environment.NewLine}";
+                    foreach (var a in alias)
+                        description += $"shortcut: {prefix}{a} {args}{Environment.NewLine}";
                 }
                 else
                 {
                     description += $"{prefix}{module.Group} {cmd.Name} {args}{Environment.NewLine}";
+                    foreach (var a in alias)
+                        description += $"shortcut: {prefix}{module.Group} {a} {args}{Environment.NewLine}";
                 }
+
+                description += Environment.NewLine;
             }
 
             if (!string.IsNullOrWhiteSpace(description))

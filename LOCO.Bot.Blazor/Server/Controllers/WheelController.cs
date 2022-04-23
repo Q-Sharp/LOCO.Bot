@@ -64,7 +64,7 @@ public class WheelController : ApiControllerBase<WheelController>
                 _ctx.Remove(dbWE);
                 _ctx.SaveChanges();
                 return Ok();
-            }            
+            }
         }
         catch (Exception ex)
         {
