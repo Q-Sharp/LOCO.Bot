@@ -1,0 +1,159 @@
+﻿@page "/configuration"
+
+@inject IAuthorizedClientFactory httpClientFactory
+@inject ISnackbar Snackbar
+
+<MudContainer Class="mt-16 px-8" MaxWidth="MaxWidth.Large">
+    <MudTable Items="@WheelEntries" Hover="true" @bind-SelectedItem="selectedItem" SortLabel="Sort By" CommitEditTooltip="Commit Edit"
+              OnCommitEditClick="@(() => Snackbar.Add("Wheel Segment saved!"))" RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+              RowEditCommit="ItemHasBeenCommitted">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Wheel Segments</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Filled.Add" OnClick="AddNew">Create</MudIconButton>
+            <MudIconButton Icon="@Icons.Filled.Delete" OnClick="Delete">Delete</MudIconButton>
+        </ToolBarContent>
+        <ColGroup>
+            <col style="width:50px;" />
+            <col style="width:200px;" />
+            <col style="width:50%;" />
+            <col style="width:100px;" />
+        </ColGroup>
+        <HeaderContent>
+            <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Id)" InitialDirection="SortDirection.Ascending">Id</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Color)">Color</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Text)">Text</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortBy="new Func<WheelEntry, object>(x => x.Qty)">Qty</MudTableSortLabel></MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Id">@context.Id</MudTd>
+            <MudTd DataLabel="Color">@context.Color</MudTd>
+            <MudTd DataLabel="Sign">@context.Text</MudTd>
+            <MudTd DataLabel="Name">@context.Qty</MudTd>
+        </RowTemplate>
+        <RowEditingTemplate>
+            <MudTd DataLabel="Color">
+                @context.Id
+            </MudTd>
+            <MudTd DataLabel="Color">
+                <MudColorPicker Style="@($"color: {@context.Color};")" ColorPickerView="ColorPickerView.Spectrum" @bind-Text="@context.Color" @bind-Value="@selectedColor" ColorPickerMode="ColorPickerMode.HEX" DisableToolbar="true" DisableAlpha="true" DisableInputs="true" />
+            </MudTd>
+            <MudTd DataLabel="Text">
+                <MudTextField @bind-Value="@context.Text" Required />
+            </MudTd>
+            <MudTd DataLabel="Qty">
+                <MudNumericField @bind-Value="@context.Qty" Required Min="0" />
+            </MudTd>
+        </RowEditingTemplate>
+        <RowTemplate>
+            <MudTd DataLabel="Id">
+                @context.Id
+            </MudTd>
+            <MudTd DataLabel="Color" Style="@($"color: {@context.Color};")">
+                @context.Color
+            </MudTd>
+            <MudTd DataLabel="Text">
+                @context.Text
+            </MudTd>
+            <MudTd DataLabel="Qty">
+                @context.Qty
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private MudColor selectedColor;
+
+    private List<string> editEvents = new();
+
+    private WheelEntry selectedItem = null;
+    private WheelEntry elementBeforeEdit;
+
+    private List<WheelEntry> WheelEntries = new List<WheelEntry>();
+
+    protected override async Task OnInitializedAsync() =>  await LoadEntries();
+
+    private async Task LoadEntries()
+    {
+        var httpClient = httpClientFactory.CreateClient();
+        WheelEntries = new List<WheelEntry>();
+
+        var we = await httpClient.GetFromJsonAsync<IEnumerable<WheelEntry>>("api/wheel");
+        WheelEntries.AddRange(we);
+    }
+
+    private void BackupItem(object item)
+    {
+        if (item is WheelEntry wheelEntry)
+        {
+            selectedColor = new MudColor(wheelEntry.Color);
+
+            elementBeforeEdit = new()
+            {
+                Id = wheelEntry.Id,
+                Color = wheelEntry.Color,
+                Text = wheelEntry.Text,
+                Qty = wheelEntry.Qty
+            };
+        }
+    }
+
+    private void AddNew()
+    {
+        var we = new WheelEntry { Color = "#000000", Text = string.Empty, Qty = 0, Id = 0 };
+        WheelEntries.Add(we);
+        selectedItem = we;
+        StateHasChanged();
+    }
+
+    private async void Delete()
+    {
+        if(selectedItem is not null)
+        {
+            var id = selectedItem.Id;
+
+            if(id == 0)
+                WheelEntries.Remove(selectedItem);
+            else
+            {
+                var httpClient = httpClientFactory.CreateClient();
+                await httpClient.DeleteAsync($"api/wheel/delete/{id}");
+                await LoadEntries();
+            }
+        }
+    }
+
+    private async void ItemHasBeenCommitted(object item)
+    {
+        if (item is WheelEntry wheelEntry)
+        {
+            var httpClient = httpClientFactory.CreateClient();
+            await httpClient.PostAsJsonAsync<WheelEntry>("api/wheel", wheelEntry);
+
+            await LoadEntries();
+        }
+    }
+
+    private void ResetItemToOriginalValues(object item)
+    {
+        if (item is WheelEntry wheelEntry)
+        {
+            if (elementBeforeEdit.Id == 0)
+            {
+                WheelEntries.Remove(wheelEntry);
+                StateHasChanged();
+            }
+            else
+            {
+                wheelEntry.Id = elementBeforeEdit.Id;
+                wheelEntry.Color = elementBeforeEdit.Color;
+                wheelEntry.Text = elementBeforeEdit.Text;
+                wheelEntry.Qty = elementBeforeEdit.Qty;
+            }
+         }
+    }
+}

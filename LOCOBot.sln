@@ -22,9 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{F7
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LOCO.Bot.Blazor.Server", "LOCO.Bot.Blazor\Server\LOCO.Bot.Blazor.Server.csproj", "{665688C6-4078-41C7-9C22-0DE3567220B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LOCO.Bot.Web.Client", "LOCO.Bot.Web.Client\LOCO.Bot.Web.Client.csproj", "{7E692820-219B-42F4-8CB9-A101D1ABF238}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LOCO.Bot.Blazor.Client", "LOCO.Bot.Blazor\Client\LOCO.Bot.Blazor.Client.csproj", "{2C9CC084-02F3-46E0-9DEE-57A550ECAC07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LOCO.Bot.Web.Server", "LOCO.Bot.Web.Server\LOCO.Bot.Web.Server.csproj", "{61531B5C-ACA5-46B7-A597-9EB3C4102FDF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,14 +56,14 @@ Global
 		{FCE75BA2-CCF3-4C87-8054-963C8EB6CAE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FCE75BA2-CCF3-4C87-8054-963C8EB6CAE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FCE75BA2-CCF3-4C87-8054-963C8EB6CAE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{665688C6-4078-41C7-9C22-0DE3567220B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{665688C6-4078-41C7-9C22-0DE3567220B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{665688C6-4078-41C7-9C22-0DE3567220B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{665688C6-4078-41C7-9C22-0DE3567220B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2C9CC084-02F3-46E0-9DEE-57A550ECAC07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2C9CC084-02F3-46E0-9DEE-57A550ECAC07}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2C9CC084-02F3-46E0-9DEE-57A550ECAC07}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2C9CC084-02F3-46E0-9DEE-57A550ECAC07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E692820-219B-42F4-8CB9-A101D1ABF238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7E692820-219B-42F4-8CB9-A101D1ABF238}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E692820-219B-42F4-8CB9-A101D1ABF238}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7E692820-219B-42F4-8CB9-A101D1ABF238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61531B5C-ACA5-46B7-A597-9EB3C4102FDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61531B5C-ACA5-46B7-A597-9EB3C4102FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61531B5C-ACA5-46B7-A597-9EB3C4102FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61531B5C-ACA5-46B7-A597-9EB3C4102FDF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

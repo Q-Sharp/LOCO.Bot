@@ -1,0 +1,44 @@
+﻿.page {
+    z-index: 3;
+    border: 2px solid #f00;
+}
+
+body {
+    z-index: 2;
+}
+
+.box {
+    min-width: 200px !important;
+    width: 200px !important;
+    height: 300px;
+    position: relative;
+    animation-name: example;
+    animation-duration: 5s;
+    float: !left;
+    margin: 5px;
+    z-index: 2;
+}
+
+.container {
+    z-index: 1;
+    width: 500%;
+    border: 2px solid #f00;
+    padding: 10px;
+    display: inline-flex;
+    flex: 0 0 200px;
+    align-items: stretch;
+    max-height: 400px;
+    margin-left: -500px;
+}
+
+@keyframes example {
+    0% {
+        left: 0px;
+        top: 0px;
+    }
+
+    70% {
+        left: 2000px;
+        top: 0px;
+    }
+}

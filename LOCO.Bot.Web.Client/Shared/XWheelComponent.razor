@@ -1,0 +1,89 @@
+﻿@inject IJSRuntime JsRuntime;
+@inject IWheelService _wheelService;
+
+@if(xBoard.Cards.Count == 0)
+{
+    <div id="pageContainer" class="page">
+        <MudButton ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())"  Color="Color.Primary">Move</MudButton>
+        <div @ref="container" id="holder" class="container">
+            <svg width="11px" height="203px" xmlns="http://www.w3.org/2000/svg">
+                <g fill-rule="evenodd">
+                    <g transform="translate(-685, -130)" fill="#DEE2FD">
+                        <g transform="translate(198, 130)">
+                            <path id="ticker" d="M 487 203 L 491 195 L 491 8 L 493 1 L 495 8 L 494 195 L 498 203 L 487 203 Z">
+                            </path>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+
+            @foreach(var card in xBoard.Cards)
+            {
+                <MudCard @key="card" @ref="@refs[card.Guid.ToString()]" class="box" style=@($"background-color: {card.Color}")>
+                     @*<MudCardMedia Image="images/door.jpg" Height="200" />*@
+                     <MudCardContent>
+                        <MudText Typo="Typo.body2">@card.Text</MudText>
+                    </MudCardContent>
+                </MudCard>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <p>Loading..</p>
+}
+
+@code{
+    private bool _move ;
+
+    private ElementReference container;
+    protected XBoard xBoard = new XBoard();
+    private Dictionary<string, MudCard> refs = new Dictionary<string, MudCard>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
+        await AddMissingCards();
+        await base.OnInitializedAsync();
+    }
+
+    [JSInvokable]
+    public void ResizeInBlazor(double width, double height)
+    {
+        xBoard.Resize(width, height);
+    }
+
+    [JSInvokable]
+    public async ValueTask RenderInBlazor(float timeStamp)
+    {
+        await AddMissingCards();
+
+        if (_move)
+            xBoard.Spin();
+
+        xBoard.Clean();
+    }
+
+    public async Task Spin()
+    {
+        _move = true;
+        await Task.Delay(TimeSpan.FromSeconds(10));
+        _move = false;
+    }
+
+    private async Task AddMissingCards()
+    {
+        var neededCards = (int)Math.Floor(xBoard.Width / XCard.CardWidth) * 2;
+
+        if (xBoard.Cards.Count < neededCards)
+        {
+            var wheelEntries = (await _wheelService.GetNextWheelEntries(neededCards - xBoard.Cards.Count)).ToList();
+
+            var i = neededCards / 2 * -1;
+            var cards = wheelEntries.Select(x => new XCard((XCard.CardWidth + 10) * i++, 150, 2, x));
+
+            xBoard.AddCards(cards);
+        }
+    }
+}
