@@ -124,7 +124,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         settings.GuessingsPossible = false;
         await _settingService.SaveChangesAsync();
 
-        await (channel as ITextChannel).SendMessageAsync("Guessings are closed now!");
+        await (channel as ITextChannel).SendMessageAsync("Guessing is closed now!");
 
         return FromSuccess("Guessings are closed now!");
     }
@@ -234,47 +234,29 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
 
     private static Embed GetRanking(IEnumerable<(Guess, string)> guesses, string result)
     {
-        if (guesses is null || guesses.Count() <= 0)
-        {
-            return default;
-        }
-
         var builder = new EmbedBuilder()
         {
             Color = new Color(114, 137, 218),
-            Description = $"Top 10 guesses for this result: {result}"
+            Description = $"Results for {result}"
         };
 
-        foreach (var guess in guesses.Select((x, i) => new { Rank = ++i, Guess = x.Item1, Mention = x.Item2 }))
+        var tgs = guesses.Select((x, i) => new 
+        { 
+            Rank = i + 1, 
+            Name = x.Item2 ?? x.Item1?.MemberName,
+            Amount = x.Item1?.GuessAmount
+        })
+        .Select(tg => $"#{tg.Rank}. {tg.Name} - ${tg.Amount}");
+
+        builder.AddField(x =>
         {
-            builder.AddField(x =>
-            {
-                x.Name = $"#{guess.Rank}";
-                x.Value = $"{guess.Mention ?? guess.Guess.MemberName} (${guess.Guess.GuessAmount})";
-                x.IsInline = true;
-            });
-        }
+            x.Name = "Top 10";
+            x.Value = string.Join(Environment.NewLine, tgs);
+            x.IsInline = true;
+        });
 
         return builder.Build();
     }
-
-    //private static string GetRankingString(IEnumerable<Guess> guesses, string result)
-    //{
-    //    if (guesses is null || guesses.Count() <= 0)
-    //        return default;
-
-    //    var sb = new StringBuilder();
-
-    //    sb.AppendLine($"Top 10 guesses for this result: {result}");
-    //    sb.AppendLine("────────────────────────────");
-
-    //    foreach (var guess in guesses.Select((x, i) => new { Rank = ++i, Guess = x }))
-    //    {
-    //        sb.AppendLine($"#{guess.Rank} - {guess.Guess.MemberName} (${guess.Guess.GuessAmount})");
-    //    }
-
-    //    return sb.ToString();
-    //}
 
     private async Task<LOCOBotResult> CheckAsync(bool checkSettings = true, bool checkIfGuessesAccepted = true)
     {
