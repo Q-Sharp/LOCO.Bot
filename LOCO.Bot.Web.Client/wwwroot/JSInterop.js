@@ -1,9 +1,10 @@
 ﻿function renderJS(timeStamp) {
     theInstance.invokeMethodAsync('RenderInBlazor', timeStamp);
     window.requestAnimationFrame(renderJS);
+    resizeToFitWindow();
 }
 
-function resizeCanvasToFitWindow() {
+function resizeToFitWindow() {
     var page = document.getElementById('pageContainer');
     if (page) {
         page.width = window.innerWidth;
@@ -14,7 +15,20 @@ function resizeCanvasToFitWindow() {
 
 window.initRenderJS = (instance) => {
     window.theInstance = instance;
-    window.addEventListener("resize", resizeCanvasToFitWindow);
-    resizeCanvasToFitWindow();
+    window.addEventListener("resize", resizeToFitWindow);
+    resizeToFitWindow();
     window.requestAnimationFrame(renderJS);
 };
+
+function ChangeSpin(start) {
+    var holder = document.getElementById('holder');
+    if (start) {
+        holder.style.animationName = "spinr";
+        holder.style.animationDuration = "15s";
+    }
+    else {
+        holder.style.animationName = null;
+        holder.style.animationDuration = "0s";
+    }
+    
+}

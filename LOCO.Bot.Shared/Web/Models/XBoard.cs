@@ -6,8 +6,8 @@ public class XBoard
     {
     }
 
-    public double Width { get; private set; }
-    public double Height { get; private set; }
+    public double Width { get; private set; } = 1250;
+    public double Height { get; private set; } = 210;
 
     public ICollection<XCard> Cards { get; set; } = new List<XCard>();
     public double XVel { get; private set; }
@@ -20,7 +20,6 @@ public class XBoard
 
     public void AddCards(IEnumerable<XCard> cards)
     {
-        var i = 0;
         foreach (var xcard in cards)
         {
             Cards.Add(xcard);

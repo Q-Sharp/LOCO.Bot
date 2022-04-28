@@ -1,12 +1,14 @@
 ﻿@inject IJSRuntime JsRuntime;
 @inject IWheelService _wheelService;
 
-@if(xBoard.Cards.Count == 0)
+@if(xBoard?.Cards != null)
 {
     <div id="pageContainer" class="page">
-        <MudButton ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())"  Color="Color.Primary">Move</MudButton>
+        <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Move</MudButton>
+
         <div @ref="container" id="holder" class="container">
-            <svg width="11px" height="203px" xmlns="http://www.w3.org/2000/svg">
+            <span class="pin">
+            <svg width="11px" height="200px" xmlns="http://www.w3.org/2000/svg">
                 <g fill-rule="evenodd">
                     <g transform="translate(-685, -130)" fill="#DEE2FD">
                         <g transform="translate(198, 130)">
@@ -16,15 +18,15 @@
                     </g>
                 </g>
             </svg>
+            </span>
 
             @foreach(var card in xBoard.Cards)
             {
-                <MudCard @key="card" @ref="@refs[card.Guid.ToString()]" class="box" style=@($"background-color: {card.Color}")>
-                     @*<MudCardMedia Image="images/door.jpg" Height="200" />*@
-                     <MudCardContent>
-                        <MudText Typo="Typo.body2">@card.Text</MudText>
-                    </MudCardContent>
-                </MudCard>
+                 <div @key="card" @ref="@refs[card.Guid.ToString()]" class="card" style=@($"background-color: {card.Color};")>
+                      <span>
+                         <p>@card.Text</p>
+                     </span>
+                 </div>
             }
         </div>
     </div>
@@ -34,12 +36,13 @@ else
     <p>Loading..</p>
 }
 
-@code{
-    private bool _move ;
+@code {
+    private bool _move;
 
     private ElementReference container;
     protected XBoard xBoard = new XBoard();
-    private Dictionary<string, MudCard> refs = new Dictionary<string, MudCard>();
+    private MudButton btn;
+    private Dictionary<string, ElementReference> refs = new Dictionary<string, ElementReference>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -68,8 +71,11 @@ else
     public async Task Spin()
     {
         _move = true;
-        await Task.Delay(TimeSpan.FromSeconds(10));
+        await JsRuntime.InvokeAsync<bool>("ChangeSpin", _move);
+        await Task.Delay(TimeSpan.FromSeconds(15));
+
         _move = false;
+        await JsRuntime.InvokeAsync<bool>("ChangeSpin", _move);
     }
 
     private async Task AddMissingCards()
