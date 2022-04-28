@@ -210,7 +210,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
             {
                 try
                 {
-                    var closestWithMention = closest.Select(guess => (guess, Context.Guild.Users.FirstOrDefault(c => c.Id == guess.MemberId).Mention));
+                    var closestWithMention = closest.Select(guess => (guess, Context.Guild.Users.FirstOrDefault(c => c.Id == guess.MemberId)?.Mention));
                     var ranking = GetRanking(closestWithMention, $"${finalResult}");
                     var first = closestWithMention.FirstOrDefault();
 
