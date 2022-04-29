@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 using Discord.WebSocket;
 
 using LOCO.Bot.Data;
@@ -63,6 +64,10 @@ public class DiscordWorker : BackgroundService
 
         await client.LoginAsync(TokenType.Bot, token);
         await client.StartAsync();
+
+        var rest = _sp.GetRequiredService<DiscordRestClient>();
+        rest.Log += LogAsync;
+        await rest.LoginAsync(TokenType.Bot, token);
 
         var ch = _sp.GetRequiredService<ICommandHandler>();
         await ch?.InitializeAsync();
