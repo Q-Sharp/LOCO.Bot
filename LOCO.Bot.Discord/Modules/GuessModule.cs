@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Commands;
+using Discord.Rest;
 
 using LOCO.Bot.Discord.Helpers;
 using LOCO.Bot.Shared.Data.Entities;
@@ -14,10 +15,12 @@ namespace LOCO.Bot.Discord.Modules;
 
 public partial class GuessModule : LOCOBotModule<GuessModule>
 {
-    public GuessModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, ILogger<GuessModule> logger)
+    private readonly DiscordRestClient _restClient;   
+
+    public GuessModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, ILogger<GuessModule> logger, DiscordRestClient restClient)
         : base(ctx, settingService, commandHandler, logger)
     {
-
+        _restClient = restClient;
     }
 
     [Command("setGuessChannel")]
@@ -100,7 +103,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
 
         await (channel as ITextChannel).SendMessageAsync("You can start guessing now!");
 
-        return FromSuccess("Guessing is Open now!");
+        return FromSuccess(Context.Channel == channel ? null : "Guessing is Open now!");
     }
 
     [Command("stopGuessing")]
@@ -124,9 +127,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         settings.GuessingsPossible = false;
         await _settingService.SaveChangesAsync();
 
-        await (channel as ITextChannel).SendMessageAsync("Guessing is closed now!");
+        await (channel as ITextChannel).SendMessageAsync("I don't accept any new guesses.");
 
-        return FromSuccess("Guessings are closed now!");
+        return FromSuccess(Context.Channel == channel ? null : "Guessings are closed now!");
     }
 
     [Command("guess")]
@@ -210,12 +213,14 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
             {
                 try
                 {
-                    var closestWithMention = closest.Select(guess => (guess, Context.Guild.Users.FirstOrDefault(c => c.Id == guess.MemberId).Mention));
-                    var ranking = GetRanking(closestWithMention, $"${finalResult}");
-                    var first = closestWithMention.FirstOrDefault();
+                    var closestWithMention = closest.Select(async guess => (guess, mention: await GetMention(guess.MemberId)));
+                    var cwm = await Task.WhenAll(closestWithMention);
+
+                    var ranking = GetRanking(cwm, $"${finalResult}");
+                    var first = cwm.FirstOrDefault();
 
                     await (channel as ITextChannel).SendMessageAsync(embed: ranking);
-                    await (channel as ITextChannel).SendMessageAsync($"Gratz: {first.Mention ?? first.guess.MemberName} was closest and won!!");
+                    await (channel as ITextChannel).SendMessageAsync($"Gratz: {first.mention ?? first.guess.MemberName} was closest and won!!");
 
                     _ctx.Guess.RemoveRange(allGuesses);
                     await _ctx.SaveChangesAsync();
@@ -226,11 +231,14 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
                 }
             }
 
-            return FromSuccess("Winner was mentioned and Db is clear for next round!");
+            return FromSuccess(Context.Channel == channel ? null : "Winner was mentioned and Db is clear for next round!");
         }
 
         return FromError(CommandError.ParseFailed, "Wrong number format.");
     }
+
+    private async Task<string> GetMention(ulong memberId) 
+        => Context.Guild.Users.FirstOrDefault(c => c.Id == memberId)?.Mention ?? (await _restClient?.GetUserAsync(memberId)).Mention;
 
     private static Embed GetRanking(IEnumerable<(Guess, string)> guesses, string result)
     {

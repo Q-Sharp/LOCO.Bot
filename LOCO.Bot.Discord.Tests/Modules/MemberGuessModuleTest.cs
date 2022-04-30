@@ -1,5 +1,6 @@
 using Discord;
 using Discord.Commands;
+using Discord.Rest;
 
 using FakeItEasy;
 
@@ -34,8 +35,9 @@ public class MemberGuessModuleTest
         var ch = A.Fake<ICommandHandler>();
         var l = A.Fake<ILogger<GuessModule>>();
         _cctx = A.Fake<ICommandContext>();
+        var rc = A.Fake<DiscordRestClient>();
 
-        var m = new GuessModule(_ctx, ss, ch, l);
+        var m = new GuessModule(_ctx, ss, ch, l, rc);
 
         //(m as IModuleBase).SetContext(_cctx);
 
