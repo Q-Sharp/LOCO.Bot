@@ -5,26 +5,23 @@
     <div id="pageContainer" class="page">
         <div>
             <div>
-        <div id="holder" class="container">
-            <div >
-
-            </div>
-            <span class="pin">
-            <svg width="11px" height="200px" xmlns="http://www.w3.org/2000/svg">
-                <g fill-rule="evenodd">
-                    <g transform="translate(-685, -130)" fill="#DEE2FD">
-                        <g transform="translate(198, 130)">
-                            <path id="ticker" d="M 487 203 L 491 195 L 491 8 L 493 1 L 495 8 L 494 195 L 498 203 L 487 203 Z">
-                            </path>
-                        </g>
-                    </g>
-                </g>
-            </svg>
-            </span>
+                <div id="holder" class="container">
+                    <div class="pin">
+                        <svg width="11px" height="200px" xmlns="http://www.w3.org/2000/svg">
+                            <g fill-rule="evenodd">
+                                <g transform="translate(-685, -130)" fill="#DEE2FD">
+                                    <g transform="translate(198, 130)">
+                                        <path id="ticker" d="M 487 203 L 491 195 L 491 8 L 493 1 L 495 8 L 494 195 L 498 203 L 487 203 Z">
+                                        </path>
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                    </div>
 
             @foreach(var card in xBoard.Cards)
             {
-                 <div @key="card" @ref="@refs[card.Guid.ToString()]" class="card" style=@($"background-color: {card.Color};")>
+                 <div @key="card" @ref="@refs[card.Guid.ToString()]" class=@($"card {_animation}") style=@($"background-color: {card.Color};")>
                       <span>
                          <p>@card.Text</p>
                      </span>
@@ -32,7 +29,7 @@
             }
         </div>
         </div>
-        <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Move</MudButton>
+            <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Move</MudButton>
         </div>
         
     </div>
@@ -43,6 +40,7 @@ else
 }
 
 @code {
+    private string _animation = "";
     private bool _move;
 
     protected XBoard xBoard = new XBoard();
@@ -54,40 +52,27 @@ else
         await base.OnInitializedAsync();
     }
 
-    [JSInvokable]
-    public void ResizeInBlazor(double width, double height)
-    {
-        xBoard.Resize(width, height);
-    }
-
-    [JSInvokable]
-    public async ValueTask RenderInBlazor(float timeStamp)
-    {
-        await AddMissingCards();
-
-        if (_move)
-            xBoard.Spin();
-
-        xBoard.Clean();
-    }
-
     public async Task Spin()
     {
-        
-        await Task.Delay(TimeSpan.FromSeconds(15));
-        
-        _move = false;
+        _move = true;
+        _animation = "containerSpinning";
+        StateHasChanged();
+
+        await Task.Delay(TimeSpan.FromSeconds(15)).ContinueWith(_ => 
+        {
+            _move = false;
+            _animation = "";
+            StateHasChanged();
+        });
     }
 
     private async Task AddMissingCards()
     {
-        var neededCards = (int)Math.Floor(xBoard.Width / XCard.CardWidth) * 2;
-
-        if (xBoard.Cards.Count < neededCards)
+        if (xBoard.Cards.Count < xBoard.NeededCards)
         {
-            var wheelEntries = (await _wheelService.GetNextWheelEntries(neededCards - xBoard.Cards.Count)).ToList();
+            var wheelEntries = (await _wheelService.GetNextWheelEntries(xBoard.NeededCards - xBoard.Cards.Count)).ToList();
 
-            var i = neededCards / 2 * -1;
+            var i = xBoard.NeededCards / 2 * -1;
             var cards = wheelEntries.Select(x => new XCard((XCard.CardWidth + 10) * i++, 150, 2, x));
 
             xBoard.AddCards(cards);

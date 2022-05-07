@@ -75,6 +75,11 @@
     width: calc(100% + 500px);
 }
 
+.cardSpinning {
+    -webkit-animation: beat 1s ease-in-out;
+    animation: beat 15s ease-in-out;
+}
+
 .pin {
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
@@ -110,7 +115,7 @@
         left: 2000px;
     }
 
-    100% {
+    90% {
         left: 3000px
     }
 }
