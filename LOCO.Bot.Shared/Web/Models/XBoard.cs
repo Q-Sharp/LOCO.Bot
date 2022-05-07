@@ -2,12 +2,10 @@
 
 public class XBoard
 {
-    public XBoard()
-    {
-    }
+    public int NeededCards => (int)Math.Floor(Width / XCard.CardWidth) * 4;
 
     public double Width { get; private set; } = 1250;
-    public double Height { get; private set; } = 210;
+    public double Height { get; private set; } = 250;
 
     public ICollection<XCard> Cards { get; set; } = new List<XCard>();
     public double XVel { get; private set; }
@@ -25,6 +23,8 @@ public class XBoard
             Cards.Add(xcard);
         }
     }
+
+    public void Remove(XCard xCard) => Cards.Remove(xCard); 
 
     public void Clean()
     {

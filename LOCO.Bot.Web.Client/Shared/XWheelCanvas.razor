@@ -1,0 +1,9 @@
+﻿@inherits XWheelCanvasComponent
+
+<div>
+    <MudButton ButtonType="@ButtonType.Button" @onclick="Spin" Disabled="Spinning" Color="Color.Primary">Move</MudButton>
+
+    <div id="canvasContainer" style="position: fixed; opacity: 1; background-color: black; width: 1250px; height: 250px">
+        <BECanvas Width="1250" Height="210" @ref="_canvas"></BECanvas>
+    </div>
+</div>
