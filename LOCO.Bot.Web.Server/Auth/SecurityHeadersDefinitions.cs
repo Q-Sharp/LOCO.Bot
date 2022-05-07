@@ -18,12 +18,14 @@ public static class SecurityHeadersDefinitions
                     builder.AddImgSrc()
                            .Self()
                            .From("https://locowheel.mmbot.xyz")
+                           .From("https://pagead2.googlesyndication.com")
                            .From("data:");
                     builder.AddFormAction().Self().From(idpHost);
                     builder.AddFontSrc()
                            .Self()
                            .From("https://fonts.googleapis.com")
                            .From("https://locowheel.mmbot.xyz")
+                           .From("https://pagead2.googlesyndication.com")
                            .OverHttps();
                     builder.AddBaseUri().Self();
                     builder.AddFrameAncestors().None();
@@ -33,15 +35,17 @@ public static class SecurityHeadersDefinitions
                         builder.AddStyleSrc()
                                .Self()
                                .From("https://static.cloudflareinsights.com")
+                               .From("https://pagead2.googlesyndication.com")
                                .From("https://locowheel.mmbot.xyz");
 
                         // due to Blazor
                         builder.AddScriptSrc()
                                .Self()
                                .WithHash256("v8v3RKRPmN4odZ1CWM5gw80QKPCCWMcpNeOmimNL2AA=")
-                               .From("https://ajax.googleapis.com/")
-                               .From("https://static.cloudflareinsights.com/")
-                               .From("https://locowheel.mmbot.xyz/")
+                               .From("https://ajax.googleapis.com")
+                               .From("https://static.cloudflareinsights.com")
+                               .From("https://locowheel.mmbot.xyz")
+                               .From("https://pagead2.googlesyndication.com")
                                .UnsafeEval();
                     }
 

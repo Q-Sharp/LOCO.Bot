@@ -1,12 +1,14 @@
-﻿@inject IJSRuntime JsRuntime;
-@inject IWheelService _wheelService;
+﻿@inject IWheelService _wheelService;
 
 @if(xBoard?.Cards != null)
 {
     <div id="pageContainer" class="page">
-        <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Move</MudButton>
+        <div>
+            <div>
+        <div id="holder" class="container">
+            <div >
 
-        <div @ref="container" id="holder" class="container">
+            </div>
             <span class="pin">
             <svg width="11px" height="200px" xmlns="http://www.w3.org/2000/svg">
                 <g fill-rule="evenodd">
@@ -29,6 +31,10 @@
                  </div>
             }
         </div>
+        </div>
+        <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Move</MudButton>
+        </div>
+        
     </div>
 }
 else
@@ -39,14 +45,12 @@ else
 @code {
     private bool _move;
 
-    private ElementReference container;
     protected XBoard xBoard = new XBoard();
     private MudButton btn;
     private Dictionary<string, ElementReference> refs = new Dictionary<string, ElementReference>();
 
     protected override async Task OnInitializedAsync()
     {
-        await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
         await AddMissingCards();
         await base.OnInitializedAsync();
     }
@@ -70,12 +74,10 @@ else
 
     public async Task Spin()
     {
-        _move = true;
-        await JsRuntime.InvokeAsync<bool>("ChangeSpin", _move);
+        
         await Task.Delay(TimeSpan.FromSeconds(15));
-
+        
         _move = false;
-        await JsRuntime.InvokeAsync<bool>("ChangeSpin", _move);
     }
 
     private async Task AddMissingCards()
