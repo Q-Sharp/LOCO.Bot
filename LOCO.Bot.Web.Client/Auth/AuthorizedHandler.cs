@@ -1,7 +1,4 @@
-﻿
-using System.Net;
-
-namespace LOCO.Bot.Web.Client.Auth;
+﻿namespace LOCO.Bot.Web.Client.Auth;
 
 public class AuthorizedHandler : DelegatingHandler
 {

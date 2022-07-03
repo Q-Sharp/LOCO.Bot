@@ -1,11 +1,4 @@
-﻿using LOCO.Bot.Shared.Data.Entities;
-using LOCO.Bot.Shared.Web.Auth;
-using LOCO.Bot.Shared.Web.Extensions;
-using LOCO.Bot.Shared.Web.Services;
-
-using System.Net.Http.Json;
-
-namespace LOCO.Bot.Web.Client.Services;
+﻿namespace LOCO.Bot.Web.Client.Services;
 
 public class WheelService : IWheelService
 {

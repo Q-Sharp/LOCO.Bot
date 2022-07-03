@@ -2,7 +2,7 @@
 
 public class XBoard
 {
-    public int NeededCards => (int)Math.Floor(Width / XCard.CardWidth) * 4;
+    public int NeededCards => (int)Math.Floor(Width / XCard.CardWidth) * 10;
 
     public double Width { get; private set; } = 1250;
     public double Height { get; private set; } = 250;

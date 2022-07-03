@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-
-namespace LOCO.Bot.Discord.Services;
+﻿namespace LOCO.Bot.Discord.Services;
 
 public abstract class LOCOBotService<T>
     where T : class

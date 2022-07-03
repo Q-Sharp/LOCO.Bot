@@ -1,11 +1,4 @@
-﻿
-using LOCO.Bot.Data;
-using LOCO.Bot.Shared.Data.Entities;
-using LOCO.Bot.Shared.Discord.Services;
-
-using Microsoft.Extensions.Logging;
-
-namespace LOCO.Bot.Discord.Services;
+﻿namespace LOCO.Bot.Discord.Services;
 
 public class SettingService : LOCOBotService<SettingService>, ISettingService
 {

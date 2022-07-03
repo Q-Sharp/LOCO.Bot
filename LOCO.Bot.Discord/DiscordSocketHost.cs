@@ -6,14 +6,6 @@ using Discord.WebSocket;
 using LOCO.Bot.Data;
 using LOCO.Bot.Discord.Services;
 using LOCO.Bot.Shared.Discord.Services;
-
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
-using Serilog;
-
 namespace LOCO.Bot.Discord;
 
 public static class DiscordSocketHost

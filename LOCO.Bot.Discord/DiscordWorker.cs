@@ -1,16 +1,3 @@
-using Discord;
-using Discord.Commands;
-using Discord.Rest;
-using Discord.WebSocket;
-
-using LOCO.Bot.Data;
-using LOCO.Bot.Shared.Discord.Services;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 namespace LOCO.Bot.Discord;
 
 public class DiscordWorker : BackgroundService

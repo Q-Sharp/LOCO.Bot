@@ -1,6 +1,4 @@
-﻿using LOCO.Bot.Shared.Web.Auth;
-
-namespace LOCO.Bot.Web.Client.Auth;
+﻿namespace LOCO.Bot.Web.Client.Auth;
 
 public class AuthorizedClientFactory : IAuthorizedClientFactory
 {

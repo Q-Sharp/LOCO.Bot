@@ -1,13 +1,4 @@
-﻿using LOCO.Bot.Shared.Web.Auth;
-using LOCO.Bot.Shared.Web.Defaults;
-
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-
-using System.Net.Http.Json;
-using System.Security.Claims;
-
-namespace LOCO.Bot.Web.Client.Auth;
+﻿namespace LOCO.Bot.Web.Client.Auth;
 
 public class LOCOAuthenticationStateProvider : AuthenticationStateProvider
 {

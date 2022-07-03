@@ -1,19 +1,4 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
-
-using LOCO.Bot.Data;
-using LOCO.Bot.Discord.Helpers;
-using LOCO.Bot.Shared.Discord.Modules;
-using LOCO.Bot.Shared.Discord.Services;
-
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-using System.Diagnostics;
-
-namespace LOCO.Bot.Discord.Services;
+﻿namespace LOCO.Bot.Discord.Services;
 
 public partial class CommandHandler : ICommandHandler
 {

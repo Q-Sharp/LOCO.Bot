@@ -1,12 +1,4 @@
-﻿using Discord;
-using Discord.Commands;
-
-using LOCO.Bot.Shared.Discord.Modules;
-using LOCO.Bot.Shared.Discord.Services;
-
-using Microsoft.Extensions.Logging;
-
-namespace LOCO.Bot.Discord.Modules;
+﻿namespace LOCO.Bot.Discord.Modules;
 
 public abstract class LOCOBotModule<T> : ModuleBase<SocketCommandContext>
 {

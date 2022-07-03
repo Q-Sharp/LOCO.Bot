@@ -1,9 +1,4 @@
-﻿using LOCO.Bot.Shared.Data;
-
-using System.Reflection;
-using System.Text.Json.Serialization;
-
-namespace LOCO.Bot.Discord.Helpers;
+﻿namespace LOCO.Bot.Discord.Helpers;
 
 public static class PropertyHelpers
 {

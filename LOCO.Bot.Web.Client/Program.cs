@@ -1,25 +1,3 @@
-using Blazored.SessionStorage;
-
-using LOCO.Bot.Web.Client;
-using LOCO.Bot.Shared.Web.Auth;
-using LOCO.Bot.Shared.Web.Defaults;
-using LOCO.Bot.Shared.Web.Services;
-using LOCO.Bot.Web.Client.Auth;
-using LOCO.Bot.Web.Client.Services;
-
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-
-using MudBlazor.Services;
-
-using Serilog;
-
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using LOCO.Bot.Shared.Web.Models;
-
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
 Log.Logger = new LoggerConfiguration()

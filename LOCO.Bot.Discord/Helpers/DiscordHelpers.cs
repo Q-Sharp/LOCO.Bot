@@ -1,9 +1,4 @@
-﻿using Discord;
-using Discord.Commands;
-
-using System.Text.RegularExpressions;
-
-namespace LOCO.Bot.Discord.Helpers;
+﻿namespace LOCO.Bot.Discord.Helpers;
 
 public static class DiscordHelpers
 {

@@ -1,6 +1,4 @@
-﻿using Discord.Commands;
-
-namespace LOCO.Bot.Discord.Attributes;
+﻿namespace LOCO.Bot.Discord.Attributes;
 public class RequireBotOwnerAttribute : PreconditionAttribute
 {
     public override Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)

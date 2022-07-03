@@ -3,9 +3,7 @@
 @if(xBoard?.Cards != null)
 {
     <div id="pageContainer" class="page">
-        <div>
-            <div>
-                <div id="holder" class="container">
+                <div class="container">
                     <div class="pin">
                         <svg width="11px" height="200px" xmlns="http://www.w3.org/2000/svg">
                             <g fill-rule="evenodd">
@@ -19,19 +17,20 @@
                         </svg>
                     </div>
 
-            @foreach(var card in xBoard.Cards)
-            {
-                 <div @key="card" @ref="@refs[card.Guid.ToString()]" class=@($"card {_animation}") style=@($"background-color: {card.Color};")>
-                      <span>
-                         <p>@card.Text</p>
-                     </span>
-                 </div>
-            }
-        </div>
-        </div>
-            <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Move</MudButton>
-        </div>
-        
+                @foreach(var card in xBoard.Cards)
+                {
+                     <div @key="card" @ref="@refs[card.Guid.ToString()]" class="card" style=@($"background-color: {card.Color};")>
+                          <span>
+                             <p>@card.Text</p>
+                         </span>
+                     </div>
+                }
+            </div>
+
+            <div class="control">
+                <MudButton Disabled="@_move" ButtonType="@ButtonType.Button" OnClick="@(async () => await Spin())" Color="Color.Primary">Spin</MudButton>
+            </div>
+       
     </div>
 }
 else
@@ -57,11 +56,22 @@ else
         _move = true;
         _animation = "containerSpinning";
         StateHasChanged();
+        refs.ToList().ForEach(x => x.Value.MudChangeCssAsync("card cardSpinning"));
+
+        _ = Task.Run(async () =>
+        {
+            while(_move)
+            {
+                RemoveCards();
+                AddMissingCards();
+                await Task.Delay(10);
+            }
+        });
 
         await Task.Delay(TimeSpan.FromSeconds(15)).ContinueWith(_ => 
         {
             _move = false;
-            _animation = "";
+            refs.ToList().ForEach(x => x.Value.MudChangeCssAsync("card"));
             StateHasChanged();
         });
     }
@@ -77,5 +87,26 @@ else
 
             xBoard.AddCards(cards);
         }
+    }
+
+    private async Task RemoveCards()
+    {
+        var t = refs.Select(async x => new
+        {
+            Key = x.Key,
+            ELem = x.Value,
+            Left = (await x.Value.MudGetBoundingClientRectAsync()).Left
+        });
+
+        var r = await Task.WhenAll(t);
+
+        r.ToList().ForEach(x =>
+        {
+            if(x.Left >= 5000)
+            {
+                refs.Remove(x.Key);
+                xBoard.Cards.Remove(xBoard.Cards.FirstOrDefault(y => y.Guid.ToString() == x.Key));
+            }
+        });
     }
 }

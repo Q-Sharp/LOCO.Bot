@@ -26,7 +26,7 @@ public class UserController : ControllerBase
 
     [HttpGet]
     [AllowAnonymous]
-    public IActionResult GetCurrentUser() => Ok(User.Identity.IsAuthenticated ? CreateUserInfo(User) : DCUser.Anonymous);
+    public IActionResult GetCurrentUser() => Ok(CreateUserInfo(User));
 
     private IDCUser CreateUserInfo(ClaimsPrincipal claimsPrincipal)
     {

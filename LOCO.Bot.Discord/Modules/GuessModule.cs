@@ -1,17 +1,4 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.Rest;
-
-using LOCO.Bot.Discord.Helpers;
-using LOCO.Bot.Shared.Data.Entities;
-using LOCO.Bot.Shared.Discord.Modules;
-using LOCO.Bot.Shared.Discord.Services;
-
-using Microsoft.Extensions.Logging;
-
-using System.Globalization;
-
-namespace LOCO.Bot.Discord.Modules;
+﻿namespace LOCO.Bot.Discord.Modules;
 
 public partial class GuessModule : LOCOBotModule<GuessModule>
 {
