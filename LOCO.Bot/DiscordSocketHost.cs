@@ -4,7 +4,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 
 using LOCO.Bot.Data;
-using LOCO.Bot.Discord.Services;
+using LOCO.Bot.Services;
 using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +14,7 @@ using Microsoft.Extensions.Hosting;
 
 using Serilog;
 
-namespace LOCO.Bot.Discord;
+namespace LOCO.Bot;
 
 public static class DiscordSocketHost
 {
@@ -53,6 +53,7 @@ public static class DiscordSocketHost
              .AddSingleton<ICommandHandler, CommandHandler>()
              .AddSingleton<ISettingService, SettingService>()
              .AddSingleton<IAdminService, AdminService>()
+             .AddScoped<IGuessHistoryService, GuessHistoryService>()
              .BuildServiceProvider();
-    });
+        });
 }

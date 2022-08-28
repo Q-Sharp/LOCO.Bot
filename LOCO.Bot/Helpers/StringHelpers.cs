@@ -1,4 +1,4 @@
-﻿namespace LOCO.Bot.Discord.Helpers;
+﻿namespace LOCO.Bot.Helpers;
 
 public static class StringHelpers
 {

@@ -1,14 +1,14 @@
 ﻿using Discord;
 using Discord.Commands;
 
+using LOCO.Bot.Attributes;
 using LOCO.Bot.Data;
-using LOCO.Bot.Discord.Attributes;
 using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace LOCO.Bot.Discord.Modules;
+namespace LOCO.Bot.Modules;
 
 [Name("Help")]
 public class HelpModule : LOCOBotModule<HelpModule>
@@ -46,9 +46,7 @@ public class HelpModule : LOCOBotModule<HelpModule>
             {
                 var result = await cmd.CheckPreconditionsAsync(Context);
                 if (!result.IsSuccess)
-                {
                     continue;
-                }
 
                 var alias = cmd.Aliases?.Where(x => string.Compare(x, cmd.Name, true) != 0).ToArray() ?? Array.Empty<string>();
                 var args = string.Join(" ", cmd.Parameters?.Select(x => $"[{x.Name}]").ToArray() ?? Array.Empty<string>());
@@ -56,7 +54,7 @@ public class HelpModule : LOCOBotModule<HelpModule>
                 if (string.Equals(cmd.Name, module.Group, StringComparison.InvariantCultureIgnoreCase))
                 {
                     description += $"{prefix}{module.Group} {args}{Environment.NewLine}";
-                    foreach(var a in alias)
+                    foreach (var a in alias)
                         description += $"shortcut: {prefix}{a} {args}{Environment.NewLine}";
                 }
                 else if (string.IsNullOrWhiteSpace(module.Group))
@@ -96,9 +94,7 @@ public class HelpModule : LOCOBotModule<HelpModule>
         var result = _service.Search(Context, command);
 
         if (!result.IsSuccess)
-        {
             return FromErrorObjectNotFound("command", command);
-        }
 
         var builder = new EmbedBuilder()
         {

@@ -24,13 +24,15 @@ public class Context : DbContext, IContext
     }
 
     public DbSet<Guess> Guess { get; set; }
+    public DbSet<GuessHistory> GuessHistory { get; set; }
     public DbSet<Setting> Setting { get; set; }
     public DbSet<Restart> Restart { get; set; }
 
     public DbSet<WheelEntry> WheelEntry { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) => modelBuilder.ApplyConfigurationsFromAssembly(typeof(Context).Assembly)
-                    .UseIdentityByDefaultColumns();
+    protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(Context).Assembly)
+                       .UseIdentityByDefaultColumns();
 
     public async Task MigrateAsync() => await Database.MigrateAsync();
 

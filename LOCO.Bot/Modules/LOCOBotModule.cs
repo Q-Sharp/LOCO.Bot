@@ -6,7 +6,7 @@ using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Logging;
 
-namespace LOCO.Bot.Discord.Modules;
+namespace LOCO.Bot.Modules;
 
 public abstract class LOCOBotModule<T> : ModuleBase<SocketCommandContext>
 {

@@ -3,7 +3,7 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 
-namespace LOCO.Bot.Discord.Helpers;
+namespace LOCO.Bot.Helpers;
 
 public static class PropertyHelpers
 {
@@ -24,9 +24,7 @@ public static class PropertyHelpers
                 if (t is not null)
                 {
                     if (TimeSpan.TryParse(newValue.ToString(), out var tSpan))
-                    {
                         safeValue = tSpan;
-                    }
                     else
                     {
                         safeValue = Convert.ChangeType(newValue, t);
@@ -84,9 +82,7 @@ public static class PropertyHelpers
         try
         {
             if (src is null || propName is null)
-            {
                 return default;
-            }
 
             if (propName.Contains("."))
             {

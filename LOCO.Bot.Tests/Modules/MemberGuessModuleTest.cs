@@ -5,7 +5,7 @@ using Discord.Rest;
 using FakeItEasy;
 
 using LOCO.Bot.Data;
-using LOCO.Bot.Discord.Modules;
+using LOCO.Bot.Modules;
 using LOCO.Bot.Shared.Data.Entities;
 using LOCO.Bot.Shared.Discord.Services;
 
@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 
 using Xunit;
 
-namespace LOCO.Bot.Discord.Tests.Modules;
+namespace LOCO.Bot.Tests.Modules;
 
 public class MemberGuessModuleTest
 {

@@ -3,7 +3,7 @@ using Discord.Commands;
 using Discord.WebSocket;
 
 using LOCO.Bot.Data;
-using LOCO.Bot.Discord.Helpers;
+using LOCO.Bot.Helpers;
 using LOCO.Bot.Shared.Discord.Modules;
 using LOCO.Bot.Shared.Discord.Services;
 
@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 using System.Diagnostics;
 
-namespace LOCO.Bot.Discord.Services;
+namespace LOCO.Bot.Services;
 
 public partial class CommandHandler : ICommandHandler
 {
@@ -54,7 +54,7 @@ public partial class CommandHandler : ICommandHandler
                 cmdException.Context.User, cmdException.Command.Name, cmdException.Context.Channel);
         }
 
-        if(logMessage.Exception is not null)
+        if (logMessage.Exception is not null)
             _logger.LogError("{Exception}", logMessage.Exception);
 
         return Task.CompletedTask;
@@ -82,16 +82,12 @@ public partial class CommandHandler : ICommandHandler
     public async Task Client_HandleCommandAsync(SocketMessage arg)
     {
         if (arg is not SocketUserMessage msg)
-        {
             return;
-        }
 
         var context = new SocketCommandContext(_client, msg);
 
         if (msg.Author.Id == _client.CurrentUser.Id || msg.Author.IsBot)
-        {
             return;
-        }
 
         var pos = 0;
         if (msg.HasStringPrefix(_config["Discord:Prefix"], ref pos, StringComparison.OrdinalIgnoreCase)
@@ -126,9 +122,7 @@ public partial class CommandHandler : ICommandHandler
             if (result.IsSuccess)
             {
                 if (runTimeResult.Reason is not null)
-                {
                     _ = await context.Channel.SendMessageAsync(runTimeResult.Reason);
-                }
 
                 return;
             }
@@ -149,13 +143,9 @@ public partial class CommandHandler : ICommandHandler
         await Task.Delay(TimeSpan.FromMinutes(2));
 
         if (userMsg is not null)
-        {
             await userMsg.DeleteAsync(new RequestOptions { AuditLogReason = "Autoremoved" });
-        }
 
         if (answer is not null)
-        {
             await answer.DeleteAsync(new RequestOptions { AuditLogReason = "Autoremoved" });
-        }
     }
 }

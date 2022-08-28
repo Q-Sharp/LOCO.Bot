@@ -1,4 +1,4 @@
-﻿using LOCO.Bot.Discord;
+﻿using LOCO.Bot;
 
 using Microsoft.Extensions.Hosting;
 

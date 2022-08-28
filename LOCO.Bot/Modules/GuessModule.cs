@@ -2,7 +2,7 @@
 using Discord.Commands;
 using Discord.Rest;
 
-using LOCO.Bot.Discord.Helpers;
+using LOCO.Bot.Helpers;
 using LOCO.Bot.Shared.Data.Entities;
 using LOCO.Bot.Shared.Discord.Modules;
 using LOCO.Bot.Shared.Discord.Services;
@@ -11,16 +11,18 @@ using Microsoft.Extensions.Logging;
 
 using System.Globalization;
 
-namespace LOCO.Bot.Discord.Modules;
+namespace LOCO.Bot.Modules;
 
 public partial class GuessModule : LOCOBotModule<GuessModule>
 {
-    private readonly DiscordRestClient _restClient;   
+    private readonly DiscordRestClient _restClient;
+    private readonly IGuessHistoryService _guessHistoryService;
 
-    public GuessModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, ILogger<GuessModule> logger, DiscordRestClient restClient)
+    public GuessModule(IContext ctx, ISettingService settingService, ICommandHandler commandHandler, ILogger<GuessModule> logger, DiscordRestClient restClient, IGuessHistoryService guessHistoryService)
         : base(ctx, settingService, commandHandler, logger)
     {
         _restClient = restClient;
+        _guessHistoryService = guessHistoryService;
     }
 
     [Command("setGuessChannel")]
@@ -80,9 +82,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync(true, false);
         if (result.Error != null)
-        {
             return result;
-        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
@@ -101,6 +101,8 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         settings.GuessingsPossible = true;
         await _settingService.SaveChangesAsync();
 
+        await _guessHistoryService.CreateHistory(Context.Guild.Id);
+
         await (channel as ITextChannel).SendMessageAsync("You can start guessing now!");
 
         return FromSuccess(Context.Channel == channel ? null : "Guessing is Open now!");
@@ -114,9 +116,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync();
         if (result.Error != null)
-        {
             return result;
-        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
@@ -126,6 +126,8 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         await channel.AddPermissionOverwriteAsync(role, new OverwritePermissions(sendMessages: PermValue.Deny), new RequestOptions { AuditLogReason = $"Guessing started by {Context.User.Username}" });
         settings.GuessingsPossible = false;
         await _settingService.SaveChangesAsync();
+
+        await _guessHistoryService.UpdateHistoryEnd(Context.Guild.Id);
 
         await (channel as ITextChannel).SendMessageAsync("I don't accept any new guesses.");
 
@@ -139,9 +141,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync();
         if (result.Error != null)
-        {
             return result;
-        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
@@ -149,9 +149,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         var role = GetRole(settings.GuessMemberRoleId);
 
         if (Context.Channel.Id != settings.GuessChannelId)
-        {
             return FromErrorUnsuccessful("This is the wrong channel for guessings!");
-        }
 
         if (double.TryParse(guess.PrepareForGuessing(), NumberStyles.Currency, new CultureInfo("en-US"), out var dGuess))
         {
@@ -181,18 +179,14 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
     {
         var result = await CheckAsync(true, false);
         if (result.Error != null)
-        {
             return result;
-        }
 
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
         if (settings.GuessingsPossible)
         {
             var stopResult = await Stop();
             if (!stopResult.IsSuccess)
-            {
                 return FromError(CommandError.Unsuccessful, "Couldn't stop guessing!");
-            }
         }
 
         if (double.TryParse(endResult.PrepareForGuessing(), NumberStyles.Currency, new CultureInfo("en-US"), out var finalResult))
@@ -206,9 +200,7 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
                 .ToList();
 
             if (closest == null || closest.Count == 0)
-            {
                 await (channel as ITextChannel).SendMessageAsync($"No guesses == no winners!");
-            }
             else
             {
                 try
@@ -231,13 +223,14 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
                 }
             }
 
+            await _guessHistoryService.UpdateHistoryResult(Context.Guild.Id);
             return FromSuccess(Context.Channel == channel ? null : "Winner was mentioned and Db is clear for next round!");
         }
 
         return FromError(CommandError.ParseFailed, "Wrong number format.");
     }
 
-    private async Task<string> GetMention(ulong memberId) 
+    private async Task<string> GetMention(ulong memberId)
         => Context.Guild.Users.FirstOrDefault(c => c.Id == memberId)?.Mention ?? (await _restClient?.GetUserAsync(memberId)).Mention;
 
     private static Embed GetRanking(IEnumerable<(Guess, string)> guesses, string result)
@@ -248,9 +241,9 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
             Description = $"Results for {result}"
         };
 
-        var tgs = guesses.Select((x, i) => new 
-        { 
-            Rank = i + 1, 
+        var tgs = guesses.Select((x, i) => new
+        {
+            Rank = i + 1,
             Name = x.Item2 ?? x.Item1?.MemberName,
             Amount = x.Item1?.GuessAmount
         })
@@ -271,14 +264,10 @@ public partial class GuessModule : LOCOBotModule<GuessModule>
         var settings = await _settingService.GetSettings(Context?.Guild?.Id ?? 0);
 
         if (checkSettings && settings.GuessChannelId == 0)
-        {
             return FromError(CommandError.Unsuccessful, "No guessing channel configured!");
-        }
 
         if (checkIfGuessesAccepted && !settings.GuessingsPossible)
-        {
             return FromError(CommandError.Unsuccessful, "No guessing round active atm!");
-        }
 
         return FromSuccess();
     }

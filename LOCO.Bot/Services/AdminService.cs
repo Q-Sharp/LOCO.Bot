@@ -4,7 +4,7 @@ using LOCO.Bot.Shared.Discord.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace LOCO.Bot.Discord.Services;
+namespace LOCO.Bot.Services;
 
 public class AdminService : LOCOBotService<AdminService>, IAdminService
 {

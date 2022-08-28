@@ -1,11 +1,11 @@
 ﻿using Discord.Commands;
 
-using LOCO.Bot.Discord.Attributes;
+using LOCO.Bot.Attributes;
 using LOCO.Bot.Shared.Discord.Services;
 
 using Microsoft.Extensions.Logging;
 
-namespace LOCO.Bot.Discord.Modules;
+namespace LOCO.Bot.Modules;
 
 [Name("Admin")]
 public class AdminModule : LOCOBotModule<AdminModule>
