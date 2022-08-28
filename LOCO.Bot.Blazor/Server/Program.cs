@@ -38,6 +38,8 @@ services.AddDbContext<Context>(o => o.UseNpgsql(connectionString));
 services.AddHttpClient();
 services.AddOptions();
 
+services.AddLocalization();
+
 services.AddAuthentication(opt =>
 {
     opt.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -115,6 +117,7 @@ else
 
 app.UseHttpsRedirection();
 app.UseBlazorFrameworkFiles();
+app.UseRequestLocalization("en-US");
 
 app.UseStaticFiles(new StaticFileOptions
 {
