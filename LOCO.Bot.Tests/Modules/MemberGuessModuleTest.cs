@@ -6,6 +6,7 @@ using FakeItEasy;
 
 using LOCO.Bot.Data;
 using LOCO.Bot.Modules;
+using LOCO.Bot.Services;
 using LOCO.Bot.Shared.Data.Entities;
 using LOCO.Bot.Shared.Discord.Services;
 
@@ -36,8 +37,9 @@ public class MemberGuessModuleTest
         var l = A.Fake<ILogger<GuessModule>>();
         _cctx = A.Fake<ICommandContext>();
         var rc = A.Fake<DiscordRestClient>();
+        var ghs = A.Fake<IGuessHistoryService>();
 
-        var m = new GuessModule(_ctx, ss, ch, l, rc);
+        var m = new GuessModule(_ctx, ss, ch, l, rc, ghs);
 
         //(m as IModuleBase).SetContext(_cctx);
 
