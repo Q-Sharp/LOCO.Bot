@@ -40,7 +40,8 @@ public static class DiscordSocketHost
              {
                  LogLevel = Enum.Parse<LogSeverity>(discordConfig.GetValue<string>("LogLevel"), true),
                  MessageCacheSize = discordConfig.GetValue<int>("MessageCacheSize"),
-                 AlwaysDownloadUsers = true
+                 AlwaysDownloadUsers = true,
+                 GatewayIntents = GatewayIntents.All
              }))
              .AddSingleton(o => new DiscordRestClient())
              .AddSingleton(s => new CommandService(new CommandServiceConfig
