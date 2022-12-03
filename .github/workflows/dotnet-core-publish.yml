@@ -34,7 +34,7 @@ jobs:
     - name: App Settings Variable Substitution
       uses: microsoft/variable-substitution@v1
       with:
-        files: './LOCO.Bot/bin/Release/net6.0/linux-x64/publish/appsettings.json'
+        files: './LOCO.Bot/bin/Release/net7.0/linux-x64/publish/appsettings.json'
       env:
         DetailedErrors: false
         Discord.DevToken: ${{ secrets.DISCORD_DEV_TOKEN }}
@@ -45,7 +45,7 @@ jobs:
       env:
           SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_KEY }}
           ARGS: "-rltgoDzvO --delete-excluded --filter 'protect *.log'"
-          SOURCE: './LOCO.Bot/bin/Release/net6.0/linux-x64/publish/'
+          SOURCE: './LOCO.Bot/bin/Release/net7.0/linux-x64/publish/'
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
@@ -57,7 +57,7 @@ jobs:
     - name: App Settings Variable Substitution
       uses: microsoft/variable-substitution@v1
       with:
-        files: './LOCO.Bot.Blazor/Server/bin/Release/net6.0/linux-x64/publish/appsettings.json'
+        files: './LOCO.Bot.Blazor/Server/bin/Release/net7.0/linux-x64/publish/appsettings.json'
       env:
         DetailedErrors: false
         Discord.AppId: ${{ secrets.DISCORD_APPID }}
