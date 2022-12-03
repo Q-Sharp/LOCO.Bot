@@ -24,4 +24,13 @@ public class AdminModule : LOCOBotModule<AdminModule>
         await _adminService.Restart(Context?.Guild?.Id ?? 0, Context.Channel.Id);
         return FromSuccess();
     }
+
+    [Command("ShowServers")]
+    [Summary("Shows all servrs the bot is member of")]
+    [RequireBotOwner]
+    public async Task<RuntimeResult> ShowServers()
+    {
+        await ReplyAsync(string.Join(Environment.NewLine, Context.Client.Guilds.Select(x => x.Name)));
+        return FromSuccess();
+    }
 }
